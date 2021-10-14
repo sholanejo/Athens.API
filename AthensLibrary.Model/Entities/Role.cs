@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AthensLibrary.Model.Entities
 {
-    public class User : IdentityUser
+   public class Role : IdentityRole
     {
-        public string FullName { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
