@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Configurations;
 using AthensLibrary.Model.Entities;
@@ -25,8 +26,11 @@ namespace AthensLibrary
                     var context = service.GetRequiredService<AthensDbContext>();
                     var userManager = service.GetRequiredService<UserManager<User>>();
                     var roleManager = service.GetRequiredService<RoleManager<Role>>();
-                    await DataInitializer.SeedRolesAsync(roleManager);
-                    await DataInitializer.SeedAdminAsync(userManager, roleManager);
+                    if (context.Set<Role>().ToList().Count == 0 || context.Set<User>().ToList().Count == 0)
+                    {
+                        await DataInitializer.SeedRolesAsync(roleManager);
+                        await DataInitializer.SeedAdminAsync(userManager, roleManager);
+                    }
                 }
                 catch (Exception ex)
                 {
