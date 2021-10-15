@@ -16,5 +16,6 @@ namespace AthensLibrary.Model.Entities
         public int InitialBookCount { get; set; }
         public int CurrentBookCount { get; set; }
         public Guid AuthorId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
