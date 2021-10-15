@@ -7,7 +7,6 @@ namespace AthensLibrary.Model.Entities
     {
         public AthensDbContext(DbContextOptions<AthensDbContext> options) : base(options)
         {
-
         }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
