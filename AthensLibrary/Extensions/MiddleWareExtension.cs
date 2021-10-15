@@ -13,6 +13,7 @@ namespace AthensLibrary.Extensions
         
         public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
+
             services.AddDbContext<AthensDbContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("AthensConnection"),

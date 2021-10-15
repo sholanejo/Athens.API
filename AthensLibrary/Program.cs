@@ -16,7 +16,6 @@ namespace AthensLibrary
         public async static Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-
             using (var scope = host.Services.CreateScope())
             {
                 var service = scope.ServiceProvider;
