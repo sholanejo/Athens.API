@@ -214,6 +214,8 @@ csx/
 ecf/
 rcf/
 
+migrations/
+
 # Windows Store app package directories and files
 AppPackages/
 BundleArtifacts/
