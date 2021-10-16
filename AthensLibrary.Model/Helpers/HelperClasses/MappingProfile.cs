@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace AthensLibrary.Model.Entities
+namespace AthensLibrary.Model.Helpers.HelperClasses
 {
     public class MappingProfile : Profile
     {
