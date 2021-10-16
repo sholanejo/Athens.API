@@ -1,4 +1,5 @@
 using AthensLibrary.Extensions;
+using AthensLibrary.Model.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,7 @@ namespace AthensLibrary
             });
             
             services.RegisterServices(Configuration);
+            services.AddAutoMapper(typeof(MappingProfile));
 
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
