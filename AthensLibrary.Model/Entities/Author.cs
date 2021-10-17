@@ -3,7 +3,7 @@ using AthensLibrary.Model.Helpers.HelperInterfaces;
 
 namespace AthensLibrary.Model.Entities
 {
-    public class Author : IReader
+    public class Author : IReader, ISoftDelete
     {
         public Guid Id { get; set; } 
         public bool IsActive { get; set; }
