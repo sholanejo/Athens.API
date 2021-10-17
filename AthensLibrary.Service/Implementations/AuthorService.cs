@@ -22,72 +22,12 @@ namespace AthensLibrary.Service.Implementations
             _serviceFactory = serviceFactory;
         }
 
-        public Task<Book> BorrowBook()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Book> CreateBook()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooks()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByAnAuthor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByCategory()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByIsbn()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByYear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategories()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategoryById()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategoryByName()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Author> Login()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Book> ReturnBook()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Author> UpdateAuthor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Book> UpdateBook()
         {
             throw new NotImplementedException();
         }
