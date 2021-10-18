@@ -15,10 +15,13 @@ namespace AthensLibrary.Controllers
         {
             this.authorService = _authorService;
         }
-
-        public IActionResult Index()
+        [HttpPost]
+        public void Create(string name, string email)
         {
-            return View();
+            
+
         }
+
+        
     }
 }
