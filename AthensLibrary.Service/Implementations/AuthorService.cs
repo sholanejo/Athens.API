@@ -24,7 +24,7 @@ namespace AthensLibrary.Service.Implementations
 
         public void Create(string name, string email)
         {
-            var author = new Author {  Name = name, Email = email, };
+            var author = new Author { };
 
             _authorRepository.Insert(author);
         }
@@ -37,13 +37,13 @@ namespace AthensLibrary.Service.Implementations
 
         public IEnumerable<Author> GetAuthorsByEmail(string email)
         {
-            var authors = _authorRepository.GetByCondition(a => a.Email == email);
+            var authors = _authorRepository.GetByCondition();
             return authors;
         }
 
         public IEnumerable<Author> GetAuthorsByName(string name)
         {
-            var authors = _authorRepository.GetByCondition(a => a.Name == name);
+            var authors = _authorRepository.GetByCondition();
             return authors;
         }
 
