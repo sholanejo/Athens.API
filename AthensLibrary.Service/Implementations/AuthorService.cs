@@ -22,54 +22,36 @@ namespace AthensLibrary.Service.Implementations
             _serviceFactory = serviceFactory;
         }
 
-        public Task<Book> BorrowBook()
+        public void Create(string name, string email)
         {
-            throw new NotImplementedException();
+            var author = new Author {  Name = name, Email = email, };
+
+            _authorRepository.Insert(author);
         }
 
-        public Task<Book> CreateBook()
+        public IEnumerable<Author> GetAll()
         {
-            throw new NotImplementedException();
+            var authors = _authorRepository.GetByCondition();
+            return authors;
         }
 
-        public Task<IEnumerable<Book>> GetAllBooks()
+        public IEnumerable<Author> GetAuthorsByEmail(string email)
         {
-            throw new NotImplementedException();
+            var authors = _authorRepository.GetByCondition(a => a.Email == email);
+            return authors;
         }
 
-        public Task<IEnumerable<Book>> GetAllBooksByAnAuthor()
+        public IEnumerable<Author> GetAuthorsByName(string name)
         {
-            throw new NotImplementedException();
+            var authors = _authorRepository.GetByCondition(a => a.Name == name);
+            return authors;
         }
 
-        public Task<IEnumerable<Book>> GetAllBooksByCategory()
+        public Author GetById(Guid id)
         {
-            throw new NotImplementedException();
-        }
+            var author = _authorRepository.GetById(id);
 
-        public Task<IEnumerable<Book>> GetAllBooksByIsbn()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByYear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategories()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategoryById()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategoryByName()
-        {
-            throw new NotImplementedException();
+            return author;
         }
 
         public Task<Author> Login()
@@ -77,17 +59,7 @@ namespace AthensLibrary.Service.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<Book> ReturnBook()
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<Author> UpdateAuthor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Book> UpdateBook()
         {
             throw new NotImplementedException();
         }

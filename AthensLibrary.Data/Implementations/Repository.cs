@@ -26,14 +26,23 @@ namespace AthensLibrary.Data.Implementations
                 return obj;
             }
 
-            public async Task<T> AddAsync(T obj)
+        public void Insert(T entity)
+        {
+            _dbSet.Add(entity);
+        }
+
+
+
+        public async Task<T> AddAsync(T obj)
             {
                 Add(obj);
                 await _dbContext.SaveChangesAsync();
                 return obj;
             }
 
-            public IEnumerable<T> GetAll()
+           
+
+        public IEnumerable<T> GetAll()
             {
                 return _dbSet.ToList();
             }
