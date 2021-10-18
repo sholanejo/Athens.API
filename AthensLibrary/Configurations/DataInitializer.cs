@@ -38,5 +38,48 @@ namespace AthensLibrary.Configurations
             }
         }
 
+        public static async Task SeedAuthorAsync(UserManager<User> authorManager, RoleManager<Role> roleManager)
+        {
+            var author1 = new User
+            {
+                UserName = "alexking@gmail.com",
+                FullName = "King Alex",
+                Email = "alexking@gmail.com",
+                PhoneNumber = "07031204544",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+
+            var author2 = new User
+            {
+                UserName = "strategicsammy@gmail.com",
+                FullName = "Strategic Sammy",
+                Email = "sammystrategic@gmail.com",
+                PhoneNumber = "07031204544",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+
+            var author3 = new User
+            {
+                UserName = "queenathena@gmail.com",
+                FullName = "Queen Athena",
+                Email = "queenathena@gmail.com",
+                PhoneNumber = "07031204544",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+
+            await authorManager.CreateAsync(author1);
+            await authorManager.CreateAsync(author2);
+            await authorManager.CreateAsync(author3);
+            await authorManager.AddToRoleAsync(author1, Roles.Author.ToString());
+            await authorManager.AddToRoleAsync(author2, Roles.Author.ToString());
+            await authorManager.AddToRoleAsync(author3, Roles.Author.ToString());
+
+            new Author { UserId = author1.Id };
+            new Author { UserId = author2.Id };
+            new Author { UserId = author3.Id };
+        }
     }
 }
