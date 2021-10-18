@@ -10,8 +10,9 @@ namespace AthensLibrary.Service.Interface
     public interface ICategoryService
     {
         Task<IEnumerable<Book>> GetAllBooksByCategory();
-        Task<IEnumerable<Category>> GetCategories();
-        Task<IEnumerable<Category>> GetCategoryByName();
-        Task<IEnumerable<Category>> GetCategoryById();
+        IEnumerable<Category> GetCategories();
+        Category GetCategoryByName(string name);
+        Category GetCategoryById(Guid id);
+        void AddCategory(Category category);
     }
 }

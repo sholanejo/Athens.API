@@ -10,6 +10,7 @@ namespace AthensLibrary.Model.Entities
         public string UserId { get; set; }
         public Guid BorrowerId { get; set; }
         public bool IsDeleted { get; set; }
+        public User User {get; set;}
 
-    }
+}
 }

@@ -42,21 +42,34 @@ namespace AthensLibrary.Configurations
                 PhoneNumberConfirmed = true
             };
 
+            var author4 = new User
+            {
+                UserName = "elonmusk@tesla.com",
+                FullName = "Elon Musk",
+                Email = "elonmusk@tesla.com",
+                PhoneNumber = "07031204544",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true
+            };
+
             if (authorManager.Users.All(a => a.Id != author1.Id))
             {
                 var user1 = await authorManager.FindByEmailAsync(author1.Email);
                 var user2 = await authorManager.FindByEmailAsync(author2.Email);
                 var user3 = await authorManager.FindByEmailAsync(author3.Email);
+                var user4 = await authorManager.FindByEmailAsync(author4.Email);
 
-                if (user1 == null || user1 == null || user3 == null)
+                if (user1 == null || user1 == null || user3 == null || user4 == null)
                 {
                     await authorManager.CreateAsync(author1, "Shola-1234");
                     await authorManager.CreateAsync(author2, "Shola-1234");
                     await authorManager.CreateAsync(author3, "Shola-1234");
+                    await authorManager.CreateAsync(author4, "Shola-1234");
 
                     await authorManager.AddToRoleAsync(author1, Roles.Author.ToString());
                     await authorManager.AddToRoleAsync(author2, Roles.Author.ToString());
                     await authorManager.AddToRoleAsync(author3, Roles.Author.ToString());
+                    await authorManager.AddToRoleAsync(author4, Roles.Author.ToString());
 
                     if (context.Database.GetPendingMigrations().Any())
                     {
@@ -68,7 +81,8 @@ namespace AthensLibrary.Configurations
                             (
                             new Author { Id = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"), UserId = author1.Id, IsActive = true, IsDeleted = false },
                             new Author { Id = new Guid("7d4bc279-823a-4fe3-b62d-62568528c2f2"), UserId = author2.Id, IsActive = true, IsDeleted = false },
-                            new Author { Id = new Guid("cb5a2153-6447-4195-824f-6f04cac88718"), UserId = author3.Id, IsActive = true, IsDeleted = false }
+                            new Author { Id = new Guid("cb5a2153-6447-4195-824f-6f04cac88718"), UserId = author3.Id, IsActive = true, IsDeleted = false },
+                            new Author { Id = new Guid("cb5a1234-1234-4195-824f-6f04cac88888"), UserId = author4.Id, IsActive = true, IsDeleted = false }
                             );
                         context.SaveChanges();
                     }

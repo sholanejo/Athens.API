@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 
@@ -10,24 +11,43 @@ namespace AthensLibrary.Service.Implementations
 {
     public class CategoryService : ICategoryService
     {
+        private readonly IUnitofWork _unitofWork;
+        private readonly IRepository<Category> _categoryRepository;
+        private readonly IServiceFactory _serviceFactory;
+
+        public CategoryService(IUnitofWork unitofWork,IServiceFactory serviceFactory)
+        {
+            _unitofWork = unitofWork;
+            _categoryRepository = unitofWork.GetRepository<Category>();
+            _serviceFactory = serviceFactory;
+
+        }
+
         public Task<IEnumerable<Book>> GetAllBooksByCategory()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Category>> GetCategories()
+        public IEnumerable<Category> GetCategories()
         {
-            throw new NotImplementedException();
+            return _categoryRepository.GetAll().ToList();
         }
 
-        public Task<IEnumerable<Category>> GetCategoryById()
+        public Category GetCategoryById(Guid id)
         {
-            throw new NotImplementedException();
+            var category = _categoryRepository.GetById(id);
+            return category;
         }
 
-        public Task<IEnumerable<Category>> GetCategoryByName()
+        public Category GetCategoryByName(string name)
         {
-            throw new NotImplementedException();
+            var category = _categoryRepository.GetSingleByCondition(c => c.CategoryName == name);
+            return category;
+        }
+
+        public void AddCategory(Category category)
+        {
+            _categoryRepository.Insert(category);
         }
     }
 }
