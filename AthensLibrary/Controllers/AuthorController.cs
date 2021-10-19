@@ -1,5 +1,11 @@
-﻿using AthensLibrary.Service.Interface;
+﻿using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.DataTransferObjects;
+using AthensLibrary.Model.Entities;
+using AthensLibrary.Service.Interface;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,21 +13,41 @@ using System.Threading.Tasks;
 
 namespace AthensLibrary.Controllers
 {
-    public class AuthorController : Controller
+    [Route("api/author")]
+    [ApiController]
+    public class AuthorController : ControllerBase
     {
-        private readonly IAuthorService authorService;
+        private readonly IUnitofWork _unitofWork;
+        private readonly IMapper _mapper;
+        private readonly IAuthorService _authorService;
+        private readonly IServiceFactory _serviceFactory;
 
-        public AuthorController(IAuthorService _authorService)
+        public AuthorController(IUnitofWork unitofWork, IServiceFactory serviceFactory, IMapper mapper, IAuthorService authorService)
         {
-            this.authorService = _authorService;
+            _unitofWork = unitofWork;
+            _authorService = authorService;
+            _serviceFactory = serviceFactory;
+            _mapper = mapper;
         }
-        [HttpPost]
-        public void Create(string name, string email)
+
+        [HttpGet]
+        public IActionResult GetAllAuthors()
         {
-            
-
+            var author = _authorService.GetAllAuthors();
+            return Ok(author);
         }
 
-        
+        [HttpGet("Id/{id}")]
+        public IActionResult GetAuthorById(Guid Id)
+        {
+            var author = _authorService.GetById(Id);
+            var authorDto = _mapper.Map<AuthorDto>(author);
+            return Ok(authorDto);
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
     }
 }

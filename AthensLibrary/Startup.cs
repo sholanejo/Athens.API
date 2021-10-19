@@ -1,5 +1,5 @@
 using AthensLibrary.Extensions;
-using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperClasses;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

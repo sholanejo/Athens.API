@@ -9,6 +9,6 @@ namespace AthensLibrary.Model.Helpers.HelperInterfaces
     public interface IReader
     {
         Guid BorrowerId { get; set; }
-        Guid UserId { get; set; }
+        string UserId { get; set; }
     }
 }

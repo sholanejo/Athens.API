@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AthensLibrary.Data.Interface;
+﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -24,39 +23,37 @@ namespace AthensLibrary.Service.Implementations
 
         public void Create(string name, string email)
         {
-            var author = new Author {  Name = name, Email = email, };
+            var author = new Author { };
 
             _authorRepository.Insert(author);
         }
 
-        public IEnumerable<Author> GetAll()
+        public IEnumerable<Author> GetAllAuthors()
         {
-            var authors = _authorRepository.GetByCondition();
-            return authors;
+            return _authorRepository.GetAll().ToList();
+
         }
+
+
+
+
 
         public IEnumerable<Author> GetAuthorsByEmail(string email)
         {
-            var authors = _authorRepository.GetByCondition(a => a.Email == email);
+            var authors = _authorRepository.GetByCondition(a => a.User.Email == email);
             return authors;
         }
 
-        public IEnumerable<Author> GetAuthorsByName(string name)
+        public IEnumerable<Author> GetAuthorByName(string name)
         {
-            var authors = _authorRepository.GetByCondition(a => a.Name == name);
+            var authors = _authorRepository.GetByCondition(a => a.User.FullName == name);
             return authors;
         }
 
         public Author GetById(Guid id)
         {
             var author = _authorRepository.GetById(id);
-
             return author;
-        }
-
-        public Task<Author> Login()
-        {
-            throw new NotImplementedException();
         }
 
         public Task<Author> UpdateAuthor()

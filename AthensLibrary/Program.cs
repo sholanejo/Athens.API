@@ -25,10 +25,16 @@ namespace AthensLibrary
                     var context = service.GetRequiredService<AthensDbContext>();
                     var userManager = service.GetRequiredService<UserManager<User>>();
                     var roleManager = service.GetRequiredService<RoleManager<Role>>();
+                    
                     if (context.Set<Role>().ToList().Count == 0 || context.Set<User>().ToList().Count == 0)
                     {
                         await DataInitializer.SeedRolesAsync(roleManager);
                         await DataInitializer.SeedAdminAsync(userManager, roleManager);
+                    }
+
+                    if(context.Set<Author>().ToList().Count == 0)
+                    {
+                        await SeedAuthor.SeedAuthorAsync(userManager, roleManager, context);
                     }
                 }
                 catch (Exception ex)

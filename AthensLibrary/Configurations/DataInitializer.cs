@@ -37,6 +37,5 @@ namespace AthensLibrary.Configurations
                 }
             }
         }
-
     }
 }
