@@ -59,7 +59,7 @@ namespace AthensLibrary.Configurations
                 var user3 = await authorManager.FindByEmailAsync(author3.Email);
                 var user4 = await authorManager.FindByEmailAsync(author4.Email);
 
-                if (user1 == null || user1 == null || user3 == null || user4 == null)
+                if (user1 is null || user2 is null || user3 is null || user4 is null)
                 {
                     await authorManager.CreateAsync(author1, "Shola-1234");
                     await authorManager.CreateAsync(author2, "Shola-1234");
