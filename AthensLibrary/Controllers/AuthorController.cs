@@ -1,15 +1,9 @@
-﻿/*using AthensLibrary.Data.Interface;
+﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects;
-using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AthensLibrary.Controllers
 {
@@ -17,12 +11,12 @@ namespace AthensLibrary.Controllers
     [ApiController]
     public class AuthorController : ControllerBase
     {
-        private readonly IUnitofWork _unitofWork;
+        private readonly IUnitOfWork _unitofWork;
         private readonly IMapper _mapper;
         private readonly IAuthorService _authorService;
         private readonly IServiceFactory _serviceFactory;
 
-        public AuthorController(IUnitofWork unitofWork, IServiceFactory serviceFactory, IMapper mapper, IAuthorService authorService)
+        public AuthorController(IUnitOfWork unitofWork, IServiceFactory serviceFactory, IMapper mapper, IAuthorService authorService)
         {
             _unitofWork = unitofWork;
             _authorService = authorService;
@@ -55,4 +49,3 @@ namespace AthensLibrary.Controllers
 
     }
 }
-*/

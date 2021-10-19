@@ -1,4 +1,4 @@
-﻿/*using AthensLibrary.Data.Interface;
+﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
@@ -12,12 +12,12 @@ namespace AthensLibrary.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly IUnitofWork _unitofWork;
+        private readonly IUnitOfWork _unitofWork;
         private readonly IMapper _mapper;
         private readonly ICategoryService _categoryService;
         private readonly IServiceFactory _serviceFactory;
 
-        public CategoryController(IUnitofWork unitofWork, IMapper mapper, IServiceFactory serviceFactory, ICategoryService categoryService)
+        public CategoryController(IUnitOfWork unitofWork, IMapper mapper, IServiceFactory serviceFactory, ICategoryService categoryService)
         {
             _unitofWork = unitofWork;
             _mapper = mapper;
@@ -59,4 +59,3 @@ namespace AthensLibrary.Controllers
         }
     }
 }
-*/
