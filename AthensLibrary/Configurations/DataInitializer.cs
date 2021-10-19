@@ -3,12 +3,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
+using AthensLibrary.Model.Helpers.HelperClasses;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AthensLibrary.Configurations
 {
-    public static class DataInitializer
+    public static class DataInitializer  
     {
+
         public static async Task SeedRolesAsync(RoleManager<Role> roleManager)
         {
             await roleManager.CreateAsync(new Role { Name = Roles.LibraryUser.ToString(), CreatedAt = DateTime.Now, CreatedBy = "Shola Nejo" });
@@ -37,5 +41,7 @@ namespace AthensLibrary.Configurations
                 }
             }
         }
+
     }
+
 }

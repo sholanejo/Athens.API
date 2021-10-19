@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Configurations;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperClasses;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace AthensLibrary
 {
     public class Program
-    {
+    {        
         public async static Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
@@ -28,8 +30,12 @@ namespace AthensLibrary
                     
                     if (context.Set<Role>().ToList().Count == 0 || context.Set<User>().ToList().Count == 0)
                     {
-                        await DataInitializer.SeedRolesAsync(roleManager);
-                        await DataInitializer.SeedAdminAsync(userManager, roleManager);
+                        await Model.Helpers.HelperClasses.DataInitializer.SeedRolesAsync(roleManager);
+                        await Model.Helpers.HelperClasses.DataInitializer.SeedAdminAsync(userManager, roleManager);
+                    }
+                    if (context.Set<Author>().ToList().Count == 0)
+                    {
+                        await SeedData.EnsurePopulated(userManager, roleManager, context);
                     }
 
                     if(context.Set<Author>().ToList().Count == 0)

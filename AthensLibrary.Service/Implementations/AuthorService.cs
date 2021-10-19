@@ -10,11 +10,11 @@ namespace AthensLibrary.Service.Implementations
 {
     public class AuthorService : IAuthorService
     {
-        private readonly IUnitofWork _unitofWork;
+        private readonly IUnitOfWork _unitofWork;
         private readonly IRepository<Author> _authorRepository;
         private readonly IServiceFactory _serviceFactory;
 
-        public AuthorService(IUnitofWork unitofWork, IServiceFactory serviceFactory)
+        public AuthorService(IUnitOfWork unitofWork, IServiceFactory serviceFactory)
         {
             _unitofWork = unitofWork;
             _authorRepository = unitofWork.GetRepository<Author>();

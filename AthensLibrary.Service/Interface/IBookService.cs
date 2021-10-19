@@ -10,7 +10,7 @@ namespace AthensLibrary.Service.Interface
     public interface IBookService
     {
          Task<Book> BorrowBook();
-         Task<Book> CreateBook();
+         Book CreateBook(Book book);
          Task<IEnumerable<Book>> GetAllBooks();
          Task<IEnumerable<Book>> GetAllBooksByAnAuthor();
          Task<IEnumerable<Book>> GetAllBooksByCategory();

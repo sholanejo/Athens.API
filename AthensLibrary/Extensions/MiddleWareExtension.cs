@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Text;
 using AthensLibrary.Data.Implementations;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Service.Implementations;
 using AthensLibrary.Service.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AthensLibrary.Extensions
 {
@@ -38,13 +42,47 @@ namespace AthensLibrary.Extensions
             services.AddAuthorization(option => option.AddPolicy("AdminRolePolicy", p => p.RequireRole(Roles.Admin.ToString())));
             services.AddAuthorization(option => option.AddPolicy("LibraryUserRolePolicy", p => p.RequireRole(Roles.LibraryUser.ToString())));
             services.AddAuthorization(option => option.AddPolicy("AuthorRolePolicy", p => p.RequireRole(Roles.Author.ToString())));
-            services.AddTransient<DbContext, AthensDbContext>();
             services.AddTransient<IServiceFactory, ServiceFactory>();
+            services.AddTransient<DbContext, AthensDbContext>();            
             services.AddTransient<IAuthorService, AuthorService>();
             services.AddTransient<ILibraryUserService, LibraryUserService>();
             services.AddTransient<IBookService, BookService>();
             services.AddTransient<ICategoryService, CategoryService>();
-            services.AddTransient<IUnitofWork, UnitofWork<AthensDbContext>>();
+            services.AddTransient<IUnitOfWork, UnitofWork<AthensDbContext>>();
+            services.AddScoped<IAuthentication, AuthenticationManager>();
+            services.AddScoped<IUserService, UserService>();
+        }
+        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSettings = configuration.GetSection("JwtSettings");
+            var secretKey = configuration["SecretKey"];
+
+            services.AddAuthentication(opt => { opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; }).AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSettings.GetSection("validIssuer").Value,
+                    ValidAudience = jwtSettings.GetSection("validAudience").Value,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+            });
+        }
+        public static void ConfigureSession(this IServiceCollection services)
+        {
+            services.AddDistributedMemoryCache();
+            services.AddSession(Options =>
+            {
+                Options.IdleTimeout = TimeSpan.FromMinutes(5);
+                Options.Cookie.HttpOnly = true;
+                Options.Cookie.IsEssential = true;
+            });
+           // services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
     }
+
+
 }

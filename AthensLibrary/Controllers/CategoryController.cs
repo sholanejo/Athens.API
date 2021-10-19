@@ -3,6 +3,7 @@ using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -12,12 +13,12 @@ namespace AthensLibrary.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly IUnitofWork _unitofWork;
+        private readonly IUnitOfWork _unitofWork;
         private readonly IMapper _mapper;
         private readonly ICategoryService _categoryService;
         private readonly IServiceFactory _serviceFactory;
 
-        public CategoryController(IUnitofWork unitofWork, IMapper mapper, IServiceFactory serviceFactory, ICategoryService categoryService)
+        public CategoryController(IUnitOfWork unitofWork, IMapper mapper, IServiceFactory serviceFactory, ICategoryService categoryService)
         {
             _unitofWork = unitofWork;
             _mapper = mapper;
@@ -25,17 +26,16 @@ namespace AthensLibrary.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Policy = "AdminRolePolicy")]
         public IActionResult CreateCategory(Category category)
         {
             var categoryEntity = _mapper.Map<Category>(category);
             _categoryService.AddCategory(categoryEntity);
-            _unitofWork.SaveChanges();
             return Ok("Category created Successfully");
 
         }
 
-        [HttpGet("Id/{id}")]
+        [HttpGet("Id/{id}"), Authorize(Policy ="AdminRolePolicy")]
         public IActionResult GetCategoryById(Guid Id)
         {
             var category = _categoryService.GetCategoryById(Id);
@@ -46,6 +46,7 @@ namespace AthensLibrary.Controllers
         [HttpGet("categoryname/{name}")]
         public IActionResult GetCategoryByName(string name)
         {
+            if (name == null) return BadRequest("Please input a valid category name");
             var category = _categoryService.GetCategoryByName(name);
             var categoryDto = _mapper.Map<CategoryDto>(category);
             return Ok(categoryDto);

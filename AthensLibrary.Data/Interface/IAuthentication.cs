@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 
-namespace AthensLibrary.Service.Interface
+namespace AthensLibrary.Data.Interface
 {
-    public interface ILibraryUserService
-    {        
-        Task<(bool success, string msg)> Register(UserRegisterDTO model);
+    public interface IAuthentication
+    {
+        Task<bool> ValidateUser(UserLoginDTO userForAuth); 
+        Task<string> CreateToken();
     }
 }

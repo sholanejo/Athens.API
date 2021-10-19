@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using AthensLibrary.Model.Helpers.HelperClasses;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AthensLibrary.Model.Entities
@@ -8,8 +9,12 @@ namespace AthensLibrary.Model.Entities
         public AthensDbContext(DbContextOptions<AthensDbContext> options) : base(options)
         {
         }
-
-
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.SeedBooks();
+            builder.SeedCategory();
+            base.OnModelCreating(builder);
+        }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }

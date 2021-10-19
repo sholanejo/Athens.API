@@ -28,6 +28,8 @@ namespace AthensLibrary
             
             services.RegisterServices(Configuration);
             services.AddAutoMapper(typeof(MappingProfile));
+            services.ConfigureJWT(Configuration);
+            services.ConfigureSession();
 
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,8 +42,9 @@ namespace AthensLibrary
             }
 
             app.UseHttpsRedirection();
-
+            
             app.UseRouting();
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 
