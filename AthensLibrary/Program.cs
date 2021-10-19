@@ -27,6 +27,7 @@ namespace AthensLibrary
                     var context = service.GetRequiredService<AthensDbContext>();
                     var userManager = service.GetRequiredService<UserManager<User>>();
                     var roleManager = service.GetRequiredService<RoleManager<Role>>();
+                    
                     if (context.Set<Role>().ToList().Count == 0 || context.Set<User>().ToList().Count == 0)
                     {
                         await Model.Helpers.HelperClasses.DataInitializer.SeedRolesAsync(roleManager);
@@ -35,6 +36,11 @@ namespace AthensLibrary
                     if (context.Set<Author>().ToList().Count == 0)
                     {
                         await SeedData.EnsurePopulated(userManager, roleManager, context);
+                    }
+
+                    if(context.Set<Author>().ToList().Count == 0)
+                    {
+                        await SeedAuthor.SeedAuthorAsync(userManager, roleManager, context);
                     }
                 }
                 catch (Exception ex)

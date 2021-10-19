@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AthensLibrary.Data.Interface;
+﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -22,72 +21,42 @@ namespace AthensLibrary.Service.Implementations
             _serviceFactory = serviceFactory;
         }
 
-        public Task<Book> BorrowBook()
+        public void Create(string name, string email)
         {
-            throw new NotImplementedException();
+            var author = new Author { };
+
+            _authorRepository.Insert(author);
         }
 
-        public Task<Book> CreateBook()
+        public IEnumerable<Author> GetAllAuthors()
         {
-            throw new NotImplementedException();
+            return _authorRepository.GetAll().ToList();
+
         }
 
-        public Task<IEnumerable<Book>> GetAllBooks()
+
+
+
+
+        public IEnumerable<Author> GetAuthorsByEmail(string email)
         {
-            throw new NotImplementedException();
+            var authors = _authorRepository.GetByCondition(a => a.User.Email == email);
+            return authors;
         }
 
-        public Task<IEnumerable<Book>> GetAllBooksByAnAuthor()
+        public IEnumerable<Author> GetAuthorByName(string name)
         {
-            throw new NotImplementedException();
+            var authors = _authorRepository.GetByCondition(a => a.User.FullName == name);
+            return authors;
         }
 
-        public Task<IEnumerable<Book>> GetAllBooksByCategory()
+        public Author GetById(Guid id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByIsbn()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByYear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategories()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategoryById()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Category>> GetCategoryByName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Author> Login()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Book> ReturnBook()
-        {
-            throw new NotImplementedException();
+            var author = _authorRepository.GetById(id);
+            return author;
         }
 
         public Task<Author> UpdateAuthor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Book> UpdateBook()
         {
             throw new NotImplementedException();
         }

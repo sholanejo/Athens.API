@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AthensLibrary.Model.DataTransferObjects
+namespace AthensLibrary.Model.Helpers.HelperInterfaces
 {
-    public class AuthorDto
+    public interface ISoftDelete
     {
+        public bool IsDeleted { get; set; }
     }
 }
