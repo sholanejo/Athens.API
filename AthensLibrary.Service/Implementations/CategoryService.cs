@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AthensLibrary.Data.Implementations;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
@@ -11,14 +12,14 @@ namespace AthensLibrary.Service.Implementations
 {
     public class CategoryService : ICategoryService
     {
-       // private readonly IUnitofWork _unitofWork;
+        private readonly IUnitOfWork _unitofWork;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IServiceFactory _serviceFactory;
 
-        public CategoryService(/*IUnitofWork unitofWork,*/ IServiceFactory serviceFactory)
+        public CategoryService(IUnitOfWork unitofWork, IServiceFactory serviceFactory)
         {
-           // _unitofWork = unitofWork;
-           // _categoryRepository = unitofWork.GetRepository<Category>();
+            _unitofWork = unitofWork;
+            _categoryRepository = unitofWork.GetRepository<Category>();
             _serviceFactory = serviceFactory;
 
         }
@@ -48,6 +49,7 @@ namespace AthensLibrary.Service.Implementations
         public void AddCategory(Category category)
         {
             _categoryRepository.Insert(category);
+            _unitofWork.SaveChanges();
         }
     }
 }
