@@ -7,22 +7,73 @@ using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace AthensLibrary.Service.Implementations
 {
-    class UserService : IUserService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IServiceFactory _serviceFactory; 
+        private readonly IServiceFactory _serviceFactory;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
+        private const int maxCheckoutValue = 10;        
 
-        public UserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory)
+        public UserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
+            _userManager = userManager;
+            _mapper = mapper;
         }
-       
+
+        public async Task<(bool success, string msg)> CheckOutABook(string borrowerId, CheckOutABookDTO model)
+        {             
+            var libraryUser = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.BorrowerId == borrowerId);
+            var borrowDetailRepo = _unitOfWork.GetRepository<BorrowDetail>();
+            if (libraryUser is null) return (false, "User not found");
+            if (!libraryUser.IsActive) return (false, "User account is not Active, please contact AthensLibrary admin for more info!!");
+            if (libraryUser.BorrowCount++ > maxCheckoutValue) return (false, "Maximum number of books that can be checkedout has been reached!\nReturn a book and try again!");
+            if (borrowDetailRepo.Any(a => a.BorrowerId == borrowerId && a.BookId == model.BookId)) return (false, "You have already checked out this book");
+            libraryUser.BorrowCount++;
+            var AddBCresult = await _userManager.UpdateAsync(libraryUser);
+            if (!AddBCresult.Succeeded) return (false, "User borrow count update failed!! Checkout failed");
+            var borrowDETAIL = new BorrowDetail
+            {
+                BookId = model.BookId,
+                BorrowedOn = DateTime.Now,
+                BorrowerId = borrowerId,
+                CreatedAt = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(15),
+            };
+            
+            borrowDetailRepo?.Add(borrowDETAIL);
+            var affectedRow = await _unitOfWork.SaveChangesAsync();
+            if (affectedRow < 1)
+            {
+                libraryUser.BorrowCount--;
+                var reduceBCresult = await _userManager.UpdateAsync(libraryUser);
+                return (false, "Internal DB error, Checkout failed!!");
+            }
+            return (true, "Checkout succesful");
+        }
+
+        public async Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId)
+        {
+            var borrowDetailRepo = _unitOfWork.GetRepository<BorrowDetail>();
+            var BorrowDetailToUpdate = borrowDetailRepo.GetById(borrowDetailId);
+            if (BorrowDetailToUpdate is null) return (false, "Borrow Detail not found");
+            BorrowDetailToUpdate.ReturnDate = DateTime.Now;
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book returned successfully");
+        }
+        
+
+        public void EnrollUser(UserRegisterDTO model, string role)
+        {
+            throw new NotImplementedException();
+        }
 
         public Book GetABookByIsbn(Guid Id)
         {
@@ -61,12 +112,15 @@ namespace AthensLibrary.Service.Implementations
         {
             return _unitOfWork.GetRepository<Book>().GetByCondition(a => a.Title == bookTitle).OrderBy(a => a.CreatedAt);
         }
-       
-        public void UpdateUser(UserUpdateEmailDTO model)
+        public async Task<(bool, string)> UpdateUser(string userId, UserUpdateDTO model)
         {
-            throw new NotImplementedException();
-        } 
-        public void EnrollUser(UserRegisterDTO model, string role)
+            var userEntity = await _userManager.FindByIdAsync(userId);
+            if (userEntity is null) return (false, "user not found");
+            _mapper.Map(model, userEntity);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+        }
+
+        public Task<(bool, string)> UpdateUser(UserUpdateDTO model)
         {
             throw new NotImplementedException();
         }

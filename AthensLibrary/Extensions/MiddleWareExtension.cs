@@ -50,6 +50,7 @@ namespace AthensLibrary.Extensions
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IUnitOfWork, UnitofWork<AthensDbContext>>();
             services.AddScoped<IAuthentication, AuthenticationManager>();
+            services.AddScoped<IUserService, UserService>();
         }
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {

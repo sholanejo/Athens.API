@@ -11,14 +11,14 @@ namespace AthensLibrary.Service.Implementations
 {
     public class CategoryService : ICategoryService
     {
-        private readonly IUnitofWork _unitofWork;
+       // private readonly IUnitofWork _unitofWork;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IServiceFactory _serviceFactory;
 
-        public CategoryService(IUnitofWork unitofWork,IServiceFactory serviceFactory)
+        public CategoryService(/*IUnitofWork unitofWork,*/ IServiceFactory serviceFactory)
         {
-            _unitofWork = unitofWork;
-            _categoryRepository = unitofWork.GetRepository<Category>();
+           // _unitofWork = unitofWork;
+           // _categoryRepository = unitofWork.GetRepository<Category>();
             _serviceFactory = serviceFactory;
 
         }

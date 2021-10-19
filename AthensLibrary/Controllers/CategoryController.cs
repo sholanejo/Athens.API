@@ -1,4 +1,4 @@
-﻿using AthensLibrary.Data.Interface;
+﻿/*using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
@@ -59,3 +59,4 @@ namespace AthensLibrary.Controllers
         }
     }
 }
+*/

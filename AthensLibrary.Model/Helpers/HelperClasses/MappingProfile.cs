@@ -2,7 +2,6 @@
 using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
-using AthensLibrary.Model.Entities;
 using AutoMapper;
 
 namespace AthensLibrary.Model.Helpers.HelperClasses

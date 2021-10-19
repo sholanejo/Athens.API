@@ -76,21 +76,21 @@ namespace AthensLibrary.Controllers
 
         
 
-        [HttpPost("{BorrowerId}/CheckOutABook"), Authorize(Policy = "LibraryUserRolePolicy")] //How can we use multiple policies without need to chain in startup
+        [HttpPost("{BorrowerId}/CheckOutABook"), Authorize] //How can we use multiple policies without need to chain in startup
         public async Task<IActionResult> CheckOutABook(string BorrowerId, [FromBody] CheckOutABookDTO model)
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            var _libraryUserService = serviceFactory.GetServices<ILibraryUserService>();
-            var (success, message) = await _libraryUserService.CheckOutABook(BorrowerId, model);
+            var _UserService = serviceFactory.GetServices<IUserService>();
+            var (success, message) = await _UserService.CheckOutABook(BorrowerId, model);
             return success ? Ok(message) : BadRequest(message);
         }
 
-        [HttpPut("{BorrowDetailId}/ReturnABook")]
+        [HttpPut("{BorrowDetailId}/ReturnABook"), Authorize]
         public async Task<IActionResult> ReturnABook(Guid borrowDetailId)
         //what if i want to return a list of books
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            var _libraryUserService = serviceFactory.GetServices<ILibraryUserService>();
+            var _libraryUserService = serviceFactory.GetServices<IUserService>();
             var (success, message) = await _libraryUserService.ReturnABook(borrowDetailId);
             return success ? Ok(message) : BadRequest(message);
         }
