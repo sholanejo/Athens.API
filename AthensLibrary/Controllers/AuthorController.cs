@@ -1,15 +1,11 @@
-﻿/*using AthensLibrary.Data.Interface;
+﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AthensLibrary.Controllers
 {
@@ -17,27 +13,29 @@ namespace AthensLibrary.Controllers
     [ApiController]
     public class AuthorController : ControllerBase
     {
-        private readonly IUnitofWork _unitofWork;
+        private readonly IUnitOfWork _unitofWork;
         private readonly IMapper _mapper;
         private readonly IAuthorService _authorService;
+        private readonly IBookService _bookService;
         private readonly IServiceFactory _serviceFactory;
 
-        public AuthorController(IUnitofWork unitofWork, IServiceFactory serviceFactory, IMapper mapper, IAuthorService authorService)
+        public AuthorController(IUnitOfWork unitofWork, IServiceFactory serviceFactory, IMapper mapper, IAuthorService authorService, IBookService bookService)
         {
             _unitofWork = unitofWork;
             _authorService = authorService;
             _serviceFactory = serviceFactory;
             _mapper = mapper;
+            _bookService = bookService;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize(Policy = "AdminRolePolicy")]
         public IActionResult GetAllAuthors()
         {
             var author = _authorService.GetAllAuthors();
             return Ok(author);
         }
 
-        [HttpGet("Id/{id}")]
+        [HttpGet("Id/{id}"), Authorize(Policy ="AdminRolePolicy")]
         public IActionResult GetAuthorById(Guid Id)
         {
             var author = _authorService.GetById(Id);
@@ -45,7 +43,15 @@ namespace AthensLibrary.Controllers
             return Ok(authorDto);
         }
 
-        [HttpGet("email/{email}")]
+        [HttpPost("createbook"), Authorize(Policy = "AdminRolePolicy", Roles = "Author")]
+        public IActionResult CreateBook(Book book)
+        {
+            var bookEntity = _mapper.Map<Book>(book);
+            _bookService.CreateBook(bookEntity);
+            return Ok("Book created Successfully");
+        }
+
+        [HttpGet("email/{email}"), Authorize(Policy = "AdminRolePolicy")]
         public IActionResult GetAuthorByEmail(string email)
         {
             var author = _authorService.GetAuthorsByEmail(email);
@@ -55,4 +61,3 @@ namespace AthensLibrary.Controllers
 
     }
 }
-*/
