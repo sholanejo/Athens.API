@@ -7,9 +7,10 @@ namespace AthensLibrary.Model.Entities
     {
         public Guid Id { get; set; } 
         public bool IsActive { get; set; }
-        public Guid UserId { get; set; }
-        public Guid BorrowerId { get; set; }
+        //since everyone should have is Deleted add it to timestamp 
         public bool IsDeleted { get; set; }
-
+        public string BorrowerId { get ; set; }
+        public string UserId { get ; set ; }
+        public User User { get; set; }
     }
 }

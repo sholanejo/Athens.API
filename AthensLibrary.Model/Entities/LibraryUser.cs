@@ -8,9 +8,9 @@ namespace AthensLibrary.Model.Entities
     {
         //IReader shows who is a reader, it contains BorrowerId 
         public Guid Id { get; set; }
-        public Guid BorrowerId { get; set; }
-        public Guid UserId { get; set; }
-        public Gender Gender { get; set; }
-        public DateTime DateOfBirth { get; set; }        
+        public string BorrowerId { get; set; }
+        public string UserId { get; set; }   
+       
+        
     }
 }

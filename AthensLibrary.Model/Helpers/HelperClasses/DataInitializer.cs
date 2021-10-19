@@ -3,14 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
-using AthensLibrary.Model.Helpers.HelperClasses;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace AthensLibrary.Configurations
+namespace AthensLibrary.Model.Helpers.HelperClasses
 {
-    public static class DataInitializer  
+    public static class DataInitializer
     {
 
         public static async Task SeedRolesAsync(RoleManager<Role> roleManager)
@@ -41,7 +41,7 @@ namespace AthensLibrary.Configurations
                 }
             }
         }
-        public static async Task SeedAuthorAsync(this ModelBuilder builder, UserManager<User> userManager, RoleManager<Role> roleManager)
+        /*public static async Task SeedAuthorAsync(this ModelBuilder builder, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
             var defaultUser = new User
             {
@@ -71,8 +71,8 @@ namespace AthensLibrary.Configurations
                 }
             }
         }
-
-        public static void SeedCategoryAsync(this ModelBuilder builder)
+*/
+        public static void SeedCategory(this ModelBuilder builder)
         {
             var cate1 = new Model.Entities.Category()
             {
@@ -83,7 +83,7 @@ namespace AthensLibrary.Configurations
             builder.Entity<Model.Entities.Category>().HasData(cate1);
         }
 
-        public static void SeedBooksAsync(this ModelBuilder builder)
+        public static void SeedBooks(this ModelBuilder builder)
         {
             var book1 = new Book
             {
@@ -113,4 +113,57 @@ namespace AthensLibrary.Configurations
         }
     }
 
+    public static class SeedData
+    {
+        public async static Task EnsurePopulated(
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager, AthensDbContext context)
+        {
+            var Author1 = new User
+            {
+                UserName = "briantracy@gmail.com",
+                Email = "briantracy1@gmail.com",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                FullName = "Brian Tracy",
+                PhoneNumber = "0817-926-5533",
+            };
+            var Author2 = new User
+            {
+                UserName = "KingAlex@gmail.com",
+                Email = "ogubuikealex1@gmail.com",
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                FullName = "King Alex",
+                PhoneNumber = "0817-926-5533",
+            };
+
+            if (userManager.Users.All(u => u.Id != Author1.Id))
+            {
+                var user1 = await userManager.FindByEmailAsync(Author1.Email);
+                var user2 = await userManager.FindByEmailAsync(Author2.Email);
+                if (user1 == null || user2 == null)
+                {
+                    await userManager.CreateAsync(Author1, "Shola-1234");
+                    await userManager.CreateAsync(Author2, "Shola-1234");
+                    await userManager.AddToRoleAsync(Author1, Roles.Author.ToString());
+                    await userManager.AddToRoleAsync(Author2, Roles.Author.ToString());                  
+                    
+                    if (context.Database.GetPendingMigrations().Any())
+                    {
+                        context.Database.Migrate();
+                    }
+                    if (!context.Authors.Any())
+                    {
+                        context.Authors.AddRange(
+                         new Author { BorrowerId = RandomItemGenerators.GenerateBorrowerId(), Id = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"), IsActive = true, IsDeleted = false, UserId = Author1.Id },
+                         new Author { BorrowerId = RandomItemGenerators.GenerateBorrowerId(), Id = new Guid("7ac90155-67e3-4750-a5f9-d8ee82f557d9"), IsActive = true, IsDeleted = false, UserId = Author2.Id }
+                                               );
+                        context.SaveChanges();
+                    }
+                }
+            }
+
+        }
+    }
 }
