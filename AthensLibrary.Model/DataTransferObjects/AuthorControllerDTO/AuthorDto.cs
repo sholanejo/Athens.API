@@ -3,7 +3,7 @@ using System;
 
 namespace AthensLibrary.Model.DataTransferObjects
 {
-    public class AuthorDto
+    public class AuthorDTO
     {
         public Guid Id { get; set; }
         public bool IsActive { get; set; }

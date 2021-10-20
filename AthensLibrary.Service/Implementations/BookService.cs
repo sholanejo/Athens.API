@@ -13,7 +13,7 @@ namespace AthensLibrary.Service.Implementations
 {
     public class BookService : IBookService
     {
-        private readonly IUnitOfWork _unitofWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Book> _bookRepository;
         private readonly IMapper _mapper;
         private readonly IServiceFactory _serviceFactory;
@@ -21,9 +21,9 @@ namespace AthensLibrary.Service.Implementations
         public BookService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, IMapper mapper)
         {
             _mapper = mapper;
-            _unitofWork = unitOfWork;
+            _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
-            _bookRepository = _unitofWork.GetRepository<Book>();
+            _bookRepository = _unitOfWork.GetRepository<Book>();
         }
 
         public Task<Book> BorrowBook()
@@ -31,51 +31,21 @@ namespace AthensLibrary.Service.Implementations
             throw new NotImplementedException();
         }
 
-        public Book CreateBook(Book book)
-        { 
+        public async Task<(bool, string)>  CreateBook(BookCreationDTO book)
+        {
             //check that the category name actually exist
             //check that the author that is being registerd with this bbok is in the db, is not deleted, he is active
-            _bookRepository.Add(book);
-            _unitofWork.SaveChanges(); //check the result of savechanges!! 
-            return book;
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooks()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByAnAuthor()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByCategory()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByIsbn()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Book>> GetAllBooksByYear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Book> ReturnBook()
-        {
-            throw new NotImplementedException();
-        }
-
+            var bookEntity = _mapper.Map<Book>(book);
+            _bookRepository.Add(bookEntity);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
+        } 
+        
         public async Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)
         {
             var bookEntity =  _bookRepository.GetById(bookId);
             if (bookEntity is null) return (false, "Book not found");
             _mapper.Map(model, bookEntity);
-            return (await _unitofWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
         }
     }
 }

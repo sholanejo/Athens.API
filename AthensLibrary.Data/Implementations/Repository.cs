@@ -11,12 +11,11 @@ namespace AthensLibrary.Data.Implementations
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private bool disposedValue = false;
-        protected readonly AthensDbContext _dbContext;
-        protected readonly DbSet<T> _dbSet;
-        public Repository(AthensDbContext context)
+        private readonly DbContext _dbContext;
+        private readonly DbSet<T> _dbSet;
+        public Repository(DbContext context)
         {
-            _dbContext = context ?? throw new ArgumentException(nameof(context));
+            _dbContext = context;
             _dbSet = _dbContext.Set<T>();
         }
 
@@ -33,7 +32,7 @@ namespace AthensLibrary.Data.Implementations
 
         public IQueryable<T> GetAllWithInclude(string incPpt)
         {
-            return _dbContext.Set<T>().AsQueryable().Include(incPpt);
+            return _dbContext.Set<T>().Include(incPpt);           
         }
 
         public async Task<T> AddAsync(T obj)
@@ -42,9 +41,6 @@ namespace AthensLibrary.Data.Implementations
             await _dbContext.SaveChangesAsync();
             return obj;
         }
-
-
-
         public IEnumerable<T> GetAll()
         {
             return _dbSet.ToList();
@@ -88,6 +84,18 @@ namespace AthensLibrary.Data.Implementations
         {
             if (predicate is null) return _dbSet.Any();
             return _dbSet.Any(predicate);
+        }
+
+        public void Delete(Guid Id)
+        {
+            var entity = _dbSet.Find(Id);
+            _dbContext.Entry(entity).State = EntityState.Modified;
+           _dbContext.SaveChanges();
+        }
+
+        public void run(Func<IQueryable, IOrderedQueryable> orderby)
+        {
+           _dbSet.Include(c => orderby).ToList();
         }
     }
 }

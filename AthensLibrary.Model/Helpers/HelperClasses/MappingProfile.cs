@@ -11,7 +11,7 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
     {
         public MappingProfile()
         {
-            CreateMap<Author, AuthorDto>();
+            CreateMap<Author, AuthorDTO>();
             CreateMap<Category, CategoryDto>();
             CreateMap<LibraryUser, LibraryUserCreationDTO>();
             CreateMap<UserUpdateDTO, User>();

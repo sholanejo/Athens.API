@@ -1,5 +1,6 @@
 ﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects;
+using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
@@ -16,39 +17,40 @@ namespace AthensLibrary.Controllers
     [Route("api/author")]
     [ApiController]
     public class AuthorController : ControllerBase
-    {
-        private readonly IUnitofWork _unitofWork;
-        private readonly IMapper _mapper;
+    {       
         private readonly IAuthorService _authorService;
         private readonly IServiceFactory _serviceFactory;
 
-        public AuthorController(IUnitofWork unitofWork, IServiceFactory serviceFactory, IMapper mapper, IAuthorService authorService)
-        {
-            _unitofWork = unitofWork;
+        public AuthorController(IServiceFactory serviceFactory, IAuthorService authorService)
+        {           
             _authorService = authorService;
-            _serviceFactory = serviceFactory;
-            _mapper = mapper;
+            _serviceFactory = serviceFactory;           
         }
 
-        [HttpGet]
+        [HttpGet("Authors")]
         public IActionResult GetAllAuthors()
         {
             var author = _authorService.GetAllAuthors();
             return Ok(author);
         }
 
-        [HttpGet("Id/{id}")]
+        [HttpGet("AuthorbyId/{id}")]
         public IActionResult GetAuthorById(Guid Id)
         {
-            var author = _authorService.GetById(Id);
-            var authorDto = _mapper.Map<AuthorDto>(author);
-            return Ok(authorDto);
+            /*var author = _authorService.GetById(Id);
+            var authorDto = _mapper.Map<AuthorDTO>(author); //please let the service be able to do the mapping and return the dto here*/
+            return Ok();
+
+            //return Ok(_authorService.GetById(Id)) //this should be the only hting in this action  method
         }
 
-       [HttpPost]
-       public IActionResult CreateAuthor()
+        [HttpPost("Create")]
+        public async  Task<IActionResult> CreateBook(BookCreationDTO model)
         {
-
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
+            var bookService = _serviceFactory.GetServices<IBookService>();
+            var (success, message) = await bookService.CreateBook(model);
+            return success ? Ok(message) : BadRequest(message);
         }
     }
 }
