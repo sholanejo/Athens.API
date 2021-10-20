@@ -24,19 +24,13 @@ namespace AthensLibrary.Service.Implementations
         public void Create(string name, string email)
         {
             var author = new Author { };
-
             _authorRepository.Insert(author);
         }
 
         public IEnumerable<Author> GetAllAuthors()
         {
             return _authorRepository.GetAll().ToList();
-
         }
-
-
-
-
 
         public IEnumerable<Author> GetAuthorsByEmail(string email)
         {
@@ -46,6 +40,8 @@ namespace AthensLibrary.Service.Implementations
 
         public IEnumerable<Author> GetAuthorByName(string name)
         {
+            //first used the usermanger to find the user by name,
+            //then find an author that has a corresponding id with user found above
             var authors = _authorRepository.GetByCondition(a => a.User.FullName == name);
             return authors;
         }

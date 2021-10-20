@@ -28,9 +28,11 @@ namespace AthensLibrary.Service.Implementations
         }
 
         public Book CreateBook(Book book)
-        {
+        { 
+            //check that the category name actually exist
+            //check that the author that is being registerd with this bbok is in the db, is not deleted, he is active
             _bookRepository.Add(book);
-            _unitofWork.SaveChanges();
+            _unitofWork.SaveChanges(); //check the result of savechanges!! 
             return book;
         }
 

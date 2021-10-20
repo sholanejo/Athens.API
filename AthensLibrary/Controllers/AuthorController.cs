@@ -43,7 +43,7 @@ namespace AthensLibrary.Controllers
             return Ok(authorDto);
         }
 
-        [HttpPost("createbook"), Authorize(Policy = "AdminRolePolicy", Roles = "Author")]
+        [HttpPost("createbook"), Authorize(Policy = "AdminRolePolicy")]
         public IActionResult CreateBook(Book book)
         {
             var bookEntity = _mapper.Map<Book>(book);
@@ -55,6 +55,7 @@ namespace AthensLibrary.Controllers
         public IActionResult GetAuthorByEmail(string email)
         {
             var author = _authorService.GetAuthorsByEmail(email);
+            if (author is null) return NotFound("Author not found");
             var authorDto = _mapper.Map<AuthorDto>(author);
             return Ok(authorDto);
         }
