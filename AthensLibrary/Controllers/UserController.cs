@@ -7,6 +7,7 @@ using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AthensLibrary.Controllers
@@ -22,7 +23,18 @@ namespace AthensLibrary.Controllers
         {
             _serviceFactory = serviceFactory;
             _userService = userService;
-          }
+        }
+
+        //POST
+
+        [HttpPost("Enroll")]
+        //How can this method be generic to both libraryusers and authors
+        public async Task<IActionResult> EnrollAuthor(UserRegisterDTO model, string role)
+        {
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");           
+            var (success, message) = await _userService.EnrollAuthor(model);
+            return success ? Ok(message) : BadRequest(message);
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Authenticate([FromBody] UserLoginDTO user)
@@ -36,22 +48,44 @@ namespace AthensLibrary.Controllers
             return Ok(new { Token = await _authManager.CreateToken() });
         }
 
-        [HttpPut("Update"), Authorize]
-        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO user)
+        [HttpPost("{BorrowerId}/CheckOutABook"), Authorize] //How can we use multiple policies without need to chain in startup
+        public async Task<IActionResult> CheckOutABook(string BorrowerId, [FromBody] CheckOutABookDTO model)
+        {
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");           
+            var (success, message) = await _userService.CheckOutABook(BorrowerId, model);
+            return success ? Ok(message) : BadRequest(message);
+        }
+
+        //PUT
+        [HttpPut("{BorrowDetailId}/ReturnABook"), Authorize]
+        public async Task<IActionResult> ReturnABook(Guid borrowDetailId)
+        //what if i want to return a list of books
+        {
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");          
+            var (success, message) = await _userService.ReturnABook(borrowDetailId);
+            return success ? Ok(message) : BadRequest(message);
+        }
+
+        //Patch
+        [HttpPatch("Update"), Authorize]
+        public async Task<IActionResult> UpdateUser([FromBody] JsonPatchDocument<UserUpdateDTO> model)
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
             HttpContext.Session.TryGetValue("Email", out byte[] email);
             if (email.Length == 0) return NotFound("Email from last session not found");
-            var (success, message) = await _userService.UpdateUser(Encoding.UTF8.GetString(email), user);
+            var (success, message) = await _userService.UpdateUser(Encoding.UTF8.GetString(email),model);
             return success ? Ok(message) : BadRequest(message);
         }
-        [HttpPut("UpdateUser/{userId}"), Authorize(Policy = "AdminRolePolicy")]
-        public async Task<IActionResult> UpdateUser(string userId, [FromBody] UserUpdateDTO user)
+
+        [HttpPatch("Update/{Id}"), Authorize(Policy ="AdminRolePolicy")]
+        public async Task<IActionResult> UpdateUser(string Id, [FromBody] JsonPatchDocument<UserUpdateDTO> model)
         {
-            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            var (success, message) = await _userService.UpdateUser(userId, user);
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");           
+            var (success, message) = await _userService.UpdateUser(Id,model);
             return success ? Ok(message) : BadRequest(message);
         }
+        
+        //GET
         [HttpGet("Books")]
         public IActionResult GetAllBooks() =>  Ok(_userService.GetAllBooks());
         [HttpGet("BooksByAuthor/{authorId}")]

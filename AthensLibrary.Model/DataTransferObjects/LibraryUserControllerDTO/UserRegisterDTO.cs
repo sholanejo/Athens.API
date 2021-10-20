@@ -16,9 +16,12 @@ namespace AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO
         [Required(ErrorMessage = "Phonenumber required")]
         public string PhoneNumber { get; set; }
         [Required(ErrorMessage = "Email required")]
+        [EmailAddress]
         public string Email { get; set; }        
         public Gender Gender { get; set; }
-        public DateTime DateOfBirth { get; set; }         
+        [DataType(DataType.DateTime)]
+        public DateTime DateOfBirth { get; set; }   
+        [DataType(DataType.Password)]
         public string Password { get; set; }
     }
 }

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AthensLibrary.Service.Interface
 {
     public interface IUserService 
-    {       
-        void EnrollUser(UserRegisterDTO model, string role);
-        Task<(bool, string)> UpdateUser(UserUpdateDTO model);
-        Task<(bool, string)> UpdateUser(string userId, UserUpdateDTO model);
+    {
+        Task<(bool, string)> EnrollAuthor(UserRegisterDTO model);
+        Task<(bool, string)> UpdateUser(string identifier, JsonPatchDocument<UserUpdateDTO> model);        
         IEnumerable<Book> GetAllBooks();
         IEnumerable<Book> GetAllBooksByAnAuthor(Guid authorId);
         IEnumerable<Book> GetAllBooksByAnAuthor(string authorName);

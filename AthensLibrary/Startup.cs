@@ -20,7 +20,12 @@ namespace AthensLibrary
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddNewtonsoftJson()
+            .AddXmlDataContractSerializerFormatters();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AthensLibrary", Version = "v1" });

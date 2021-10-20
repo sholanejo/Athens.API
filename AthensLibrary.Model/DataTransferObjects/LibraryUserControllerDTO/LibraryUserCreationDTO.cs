@@ -8,9 +8,7 @@ using AthensLibrary.Model.Enumerators;
 namespace AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO
 {
     class LibraryUserCreationDTO
-    {
-        
-        public Guid Id { get; set; }
+    {  
         public Guid BorrowerId { get; set; }
         public Guid UserId { get; set; }
         public Gender Gender { get; set; }
