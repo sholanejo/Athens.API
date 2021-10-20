@@ -38,6 +38,8 @@ namespace AthensLibrary.Service.Implementations
             return authors;
         }
 
+        
+
         public IEnumerable<Author> GetAuthorByName(string name)
         {
             //first used the usermanger to find the user by name,

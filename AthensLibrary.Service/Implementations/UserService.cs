@@ -111,11 +111,11 @@ namespace AthensLibrary.Service.Implementations
            return _unitOfWork.GetRepository<Book>().GetByCondition(a => a.AuthorId == authorId).OrderBy(a => a.CreatedAt);
         }
 
-        public IEnumerable<Book> GetAllBooksByAnAuthor(string authorName)
+        public IEnumerable<Book> GetAllBooksByAnAuthor(string identifier)
         {
-           var user = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.FullName == authorName);
+           var user = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.FullName == identifier || a.Email == identifier ||  a.Id == identifier);
            var author = _unitOfWork.GetRepository<Author>().GetSingleByCondition(a => a.UserId == user.Id);
-           return _unitOfWork.GetRepository<Book>().GetByCondition(a => a.AuthorId == author.Id).OrderBy(a => a.CreatedAt);
+            return GetAllBooksByAnAuthor(author.Id);
         }
 
         public IEnumerable<Book> GetAllBooksInACategory(string categoryName)

@@ -19,8 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AthensLibrary.Data\AthensLibrary.Data.csproj" />
-    <ProjectReference Include="..\AthensLibrary.Model\AthensLibrary.Model.csproj" />
     <ProjectReference Include="..\AthensLibrary.Service\AthensLibrary.Service.csproj" />
   </ItemGroup>
 

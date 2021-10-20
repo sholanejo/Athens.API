@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
+using AthensLibrary.Filters.ActionFilters;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AthensLibrary.Controllers
 {
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     [Route("api/LibraryUser")]
     [ApiController]
     public class LibraryUserController : ControllerBase
@@ -26,7 +28,6 @@ namespace AthensLibrary.Controllers
         public async Task<IActionResult> Register(UserRegisterDTO model)
         {
             //this method shoould use createAtRoute to return 201 and not 200, following rest pprinciples
-            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
             var libraryuserService = _serviceFactory.GetServices<ILibraryUserService>();
             var (success, message) = await libraryuserService.Register(model);
             return success ? Ok(message) : BadRequest(message);

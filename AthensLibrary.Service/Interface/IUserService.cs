@@ -16,7 +16,7 @@ namespace AthensLibrary.Service.Interface
         Task<(bool, string)> UpdateUser(string identifier, JsonPatchDocument<UserUpdateDTO> model);        
         IEnumerable<Book> GetAllBooks();
         IEnumerable<Book> GetAllBooksByAnAuthor(Guid authorId);
-        IEnumerable<Book> GetAllBooksByAnAuthor(string authorName);
+        IEnumerable<Book> GetAllBooksByAnAuthor(string identifier);
         IEnumerable<Book> GetAllBooksInACategory(string categoryName);   
         IEnumerable<Book> GetAllBooksPublishedInAYear(int year);
         Book GetABookByIsbn(Guid Id);

@@ -2,6 +2,7 @@
 using System.Text;
 using AthensLibrary.Data.Implementations;
 using AthensLibrary.Data.Interface;
+using AthensLibrary.Filters.ActionFilters;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Service.Implementations;
@@ -50,7 +51,8 @@ namespace AthensLibrary.Extensions
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<IUnitOfWork, UnitofWork<AthensDbContext>>();
             services.AddScoped<IAuthentication, AuthenticationManager>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddScoped<ValidationFilterAttribute>();
         }
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
@@ -79,8 +81,7 @@ namespace AthensLibrary.Extensions
                 Options.IdleTimeout = TimeSpan.FromMinutes(5);
                 Options.Cookie.HttpOnly = true;
                 Options.Cookie.IsEssential = true;
-            });
-           // services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            });           
         }
     }
 
