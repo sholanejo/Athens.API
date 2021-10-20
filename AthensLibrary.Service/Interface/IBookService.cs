@@ -1,4 +1,5 @@
-﻿using AthensLibrary.Model.Entities;
+﻿using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
+using AthensLibrary.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace AthensLibrary.Service.Interface
          Task<IEnumerable<Book>> GetAllBooksByCategory();
          Task<IEnumerable<Book>> GetAllBooksByIsbn();
          Task<IEnumerable<Book>> GetAllBooksByYear();
-         Task<Book> UpdateBook();
+         Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
          Task<Book> ReturnBook();
 
     }
