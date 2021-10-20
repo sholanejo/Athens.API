@@ -74,8 +74,6 @@ namespace AthensLibrary.Controllers
             return Ok();
         }
 
-        
-
         [HttpPost("{BorrowerId}/CheckOutABook"), Authorize] //How can we use multiple policies without need to chain in startup
         public async Task<IActionResult> CheckOutABook(string BorrowerId, [FromBody] CheckOutABookDTO model)
         {

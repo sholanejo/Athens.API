@@ -16,6 +16,7 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
             CreateMap<LibraryUser, LibraryUserCreationDTO>();
             CreateMap<UserUpdateDTO, User>();
             CreateMap<Book, BookCreationDTO>();
+            CreateMap<BookUpdateDTO, Book>();
         }
     }
 }

@@ -3,10 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AthensLibrary.Model.Helpers.HelperClasses
 {
@@ -41,37 +39,7 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
                 }
             }
         }
-        /*public static async Task SeedAuthorAsync(this ModelBuilder builder, UserManager<User> userManager, RoleManager<Role> roleManager)
-        {
-            var defaultUser = new User
-            {
-                UserName = "briantracy@gmail.com",
-                Email = "briantracy@gmail.com",
-                EmailConfirmed = true,
-                PhoneNumberConfirmed = true,
-                FullName = "Brian Tracy",
-                PhoneNumber = "0817-926-5533",
-            };
-            if (userManager.Users.All(u => u.Id != defaultUser.Id))
-            {
-                var user = await userManager.FindByEmailAsync(defaultUser.Email);
-                if (user == null)
-                {
-                    await userManager.CreateAsync(defaultUser, "Shola-1234");
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Author.ToString());
-                    var auth = new Author
-                    {
-                        Id = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"),
-                        IsActive = true,
-                        BorrowerId = RandomItemGenerators.GenerateBorrowerId(),
-                        IsDeleted = false,
-                        UserId = user.Id
-                    };
-                    builder.Entity<Author>().HasData(auth);
-                }
-            }
-        }
-*/
+
         public static void SeedCategory(this ModelBuilder builder)
         {
             var cate1 = new Model.Entities.Category()
@@ -147,8 +115,8 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
                     await userManager.CreateAsync(Author1, "Shola-1234");
                     await userManager.CreateAsync(Author2, "Shola-1234");
                     await userManager.AddToRoleAsync(Author1, Roles.Author.ToString());
-                    await userManager.AddToRoleAsync(Author2, Roles.Author.ToString());                  
-                    
+                    await userManager.AddToRoleAsync(Author2, Roles.Author.ToString());
+
                     if (context.Database.GetPendingMigrations().Any())
                     {
                         context.Database.Migrate();

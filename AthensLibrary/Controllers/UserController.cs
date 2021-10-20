@@ -17,7 +17,6 @@ namespace AthensLibrary.Controllers
     {
         private readonly IServiceFactory _serviceFactory;
         private readonly IUserService _userService;
-        private readonly UserManager<User> userManager;
 
         public UserController(IServiceFactory serviceFactory, IUserService userService)
         {
@@ -46,7 +45,7 @@ namespace AthensLibrary.Controllers
             var (success, message) = await _userService.UpdateUser(Encoding.UTF8.GetString(email), user);
             return success ? Ok(message) : BadRequest(message);
         }
-        [HttpPut("UpdateUser"), Authorize(Policy = "AdminRolePolicy")]
+        [HttpPut("UpdateUser/{userId}"), Authorize(Policy = "AdminRolePolicy")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] UserUpdateDTO user)
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
@@ -58,13 +57,13 @@ namespace AthensLibrary.Controllers
         [HttpGet("BooksByAuthor/{authorId}")]
         public IActionResult GetAllBooksByAnAuthor(string authorId) =>  Ok(_userService.GetAllBooksByAnAuthor(authorId));
         [HttpGet("BooksByCategory/{categoryName}")]
-        public IActionResult GetAllBooksByACategory(string categoryName ) =>  Ok(_userService.GetAllBooksByAnAuthor(categoryName));
+        public IActionResult GetAllBooksByACategory(string categoryName ) =>  Ok(_userService.GetAllBooksInACategory(categoryName));
         [HttpGet("BooksByYear/{year}")]
         public IActionResult GetAllBooksByYearPublished(int year) =>  Ok(_userService.GetAllBooksPublishedInAYear(year));
         [HttpGet("BooksByTitle/{bookTitle}")]
         public IActionResult GetAllBooksByTitle(string bookTitle) =>  Ok(_userService.GetBooksByTitle(bookTitle));
         [HttpGet("Book/{Id}")]
-        public IActionResult GetBooksByIsbn(Guid Id) =>  Ok(_userService.GetABookByIsbn(Id));
+        public IActionResult GetBookByIsbn(Guid Id) =>  Ok(_userService.GetABookByIsbn(Id));
                
     }
 }

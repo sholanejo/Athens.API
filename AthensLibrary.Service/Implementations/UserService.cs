@@ -112,9 +112,9 @@ namespace AthensLibrary.Service.Implementations
         {
             return _unitOfWork.GetRepository<Book>().GetByCondition(a => a.Title == bookTitle).OrderBy(a => a.CreatedAt);
         }
-        public async Task<(bool, string)> UpdateUser(string userId, UserUpdateDTO model)
+        public async Task<(bool, string)> UpdateUser(string email, UserUpdateDTO model)
         {
-            var userEntity = await _userManager.FindByIdAsync(userId);
+            var userEntity = await _userManager.FindByEmailAsync(email);
             if (userEntity is null) return (false, "user not found");
             _mapper.Map(model, userEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
