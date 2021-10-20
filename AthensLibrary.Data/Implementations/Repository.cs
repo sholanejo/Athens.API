@@ -1,4 +1,5 @@
 ﻿using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace AthensLibrary.Data.Implementations
     public class Repository<T> : IRepository<T> where T : class
     {
         private bool disposedValue = false;
-        private readonly DbContext _dbContext;
-        private readonly DbSet<T> _dbSet;
-        public Repository(DbContext context)
+        protected readonly AthensDbContext _dbContext;
+        protected readonly DbSet<T> _dbSet;
+        public Repository(AthensDbContext context)
         {
             _dbContext = context ?? throw new ArgumentException(nameof(context));
             _dbSet = _dbContext.Set<T>();
