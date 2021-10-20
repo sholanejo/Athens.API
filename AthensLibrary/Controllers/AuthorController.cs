@@ -1,11 +1,13 @@
 ﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects;
+using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace AthensLibrary.Controllers
 {
@@ -49,6 +51,14 @@ namespace AthensLibrary.Controllers
             var bookEntity = _mapper.Map<Book>(book);
             _bookService.CreateBook(bookEntity);
             return Ok("Book created Successfully");
+        }
+
+        [HttpPut("UpdateBook/{bookId}"), Authorize(Policy = "AdminRolePolicy")]
+        public async Task<IActionResult> UpdateBook(Guid bookId, [FromBody] BookUpdateDTO book)
+        {
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
+            var (success, message) = await _bookService.UpdateBook(bookId, book);
+            return success ? Ok(message) : BadRequest(message);
         }
 
         [HttpGet("email/{email}"), Authorize(Policy = "AdminRolePolicy")]
