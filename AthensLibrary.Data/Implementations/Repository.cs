@@ -10,10 +10,13 @@ using System.Threading.Tasks;
 
 namespace AthensLibrary.Data.Implementations
 {
+    // T is a class and it implement ISoftDelete(Which contains the IsDeleted property)
     public class Repository<T> : IRepository<T> where T : class, ISoftDelete
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<T> _dbSet;
+
+        // predicate to help us filter and select entities where is their IsDeleted property is false
         private Expression<Func<T, bool>> softDeletePredicate = e=>e.IsDeleted == false;
 
 
@@ -36,7 +39,7 @@ namespace AthensLibrary.Data.Implementations
 
         public IQueryable<T> GetAllWithInclude(string incPpt)
         {
-            return _dbContext.Set<T>().Include(incPpt);           
+            return _dbContext.Set<T>().Where(softDeletePredicate).Include(incPpt);           
         }
 
         public async Task<T> AddAsync(T obj)
@@ -68,7 +71,7 @@ namespace AthensLibrary.Data.Implementations
         {
            
             var entity = _dbSet.Find(id);
-            // should we return null when object is deleted
+            // TODO : should we return null when object is deleted 
            // if (entity.IsDeleted == true) return null;    
             return entity;
         }
@@ -76,7 +79,7 @@ namespace AthensLibrary.Data.Implementations
         public async Task<T> GetByIdAsync(object id)
         {
             var entity = await _dbSet.FindAsync(id);
-            // should we return null when object is deleted
+            // TODO : should we return null when object is deleted
             // if (entity.IsDeleted == true) return null;
             return entity;
         }
