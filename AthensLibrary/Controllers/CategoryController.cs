@@ -6,6 +6,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AthensLibrary.Controllers
 {
@@ -26,21 +28,19 @@ namespace AthensLibrary.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost, Authorize(Policy = "AdminRolePolicy")]
-        public IActionResult CreateCategory(Category category)
+        [HttpPost("addcategory")]
+        public async Task<IActionResult> CreateCategory([FromBody]CategoryCreationDTO category)
         {
-            var categoryEntity = _mapper.Map<Category>(category);
-            _categoryService.AddCategory(categoryEntity);
-            return Ok("Category created Successfully");
-
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
+            var (success, message) = await _categoryService.AddCategory(category);
+            return success ? Ok(message) : BadRequest(message);
         }
 
-        [HttpGet("Id/{id}"), Authorize(Policy ="AdminRolePolicy")]
+        [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")]
         public IActionResult GetCategoryById(Guid Id)
         {
             var category = _categoryService.GetCategoryById(Id);
-            var categoryDto = _mapper.Map<CategoryDto>(category);
-            return Ok(categoryDto);
+            return Ok(category);
         }
 
         [HttpGet("categoryname/{name}")]
@@ -52,11 +52,23 @@ namespace AthensLibrary.Controllers
             return Ok(categoryDto);
         }
 
-        [HttpGet]
+        [HttpGet("allcategories")]
         public IActionResult GetAllCategories()
         {
             var category = _categoryService.GetCategories();
             return Ok(category);
+        }
+
+        [HttpPost("categoryCollection")]
+        public async Task<IActionResult> CreateCategoryCollection([FromBody] IEnumerable<CategoryCreationDTO> model)
+        {
+            var categoryEntities = _mapper.Map<IEnumerable<CategoryCreationDTO>>(model);
+            foreach (var category in categoryEntities)
+            {
+                await _categoryService.AddCategory(category);
+            }
+            await _unitofWork.SaveChangesAsync();
+            return Ok("categories created successfully");
         }
     }
 }
