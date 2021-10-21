@@ -13,6 +13,7 @@ namespace AthensLibrary.Service.Interface
         IEnumerable<Author> GetAuthorByName(string name);
         IEnumerable<Author> GetAllAuthors();
         IEnumerable<Author> GetAuthorsByEmail(string email);
+        void Delete(Guid id);
 
     }
 }

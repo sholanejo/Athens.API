@@ -52,5 +52,12 @@ namespace AthensLibrary.Controllers
             var (success, message) = await bookService.CreateBook(model);
             return success ? Ok(message) : BadRequest(message);
         }
+
+        [HttpDelete("Delete/{id}")]
+        public IActionResult  Delete(Guid id)
+        {
+            _authorService.Delete(id);
+            return Ok();
+        }
     }
 }
