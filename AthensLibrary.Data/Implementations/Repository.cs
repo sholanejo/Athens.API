@@ -1,5 +1,6 @@
 ﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperInterfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,13 @@ using System.Threading.Tasks;
 
 namespace AthensLibrary.Data.Implementations
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class, ISoftDelete
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<T> _dbSet;
+
+        
+
         public Repository(DbContext context)
         {
             _dbContext = context;
@@ -89,8 +93,8 @@ namespace AthensLibrary.Data.Implementations
         public void Delete(Guid Id)
         {
             var entity = _dbSet.Find(Id);
+            entity.IsDeleted = true;
             _dbContext.Entry(entity).State = EntityState.Modified;
-           _dbContext.SaveChanges();
         }
 
         public void run(Func<IQueryable, IOrderedQueryable> orderby)
