@@ -1,5 +1,6 @@
 ﻿using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperInterfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,16 @@ using System.Threading.Tasks;
 
 namespace AthensLibrary.Data.Implementations
 {
-    public class Repository<T> : IRepository<T> where T : class
+    // T is a class and it implement ISoftDelete(Which contains the IsDeleted property)
+    public class Repository<T> : IRepository<T> where T : class, ISoftDelete
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<T> _dbSet;
+
+        // predicate to help us filter and select entities where is their IsDeleted property is false
+        private Expression<Func<T, bool>> softDeletePredicate = e=>e.IsDeleted == false;
+
+
         public Repository(DbContext context)
         {
             _dbContext = context;
@@ -32,7 +39,7 @@ namespace AthensLibrary.Data.Implementations
 
         public IQueryable<T> GetAllWithInclude(string incPpt)
         {
-            return _dbContext.Set<T>().Include(incPpt);           
+            return _dbContext.Set<T>().Where(softDeletePredicate).Include(incPpt);           
         }
 
         public async Task<T> AddAsync(T obj)
@@ -43,59 +50,64 @@ namespace AthensLibrary.Data.Implementations
         }
         public IEnumerable<T> GetAll()
         {
-            return _dbSet.ToList();
+            // return only none deleted items
+            return _dbSet.Where(softDeletePredicate).ToList();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+
+            return await _dbSet.Where(softDeletePredicate).ToListAsync();
 
         }
 
         public IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate = null, Func<IQueryable, IOrderedQueryable> orderby = null, int? skip = null, int? take = null, params string[] includeProperties)
         {
-            if (predicate is null) return _dbSet.ToList();
-            return _dbSet.Where(predicate);
+            if (predicate is null) return _dbSet.Where(softDeletePredicate).ToList();
+            return _dbSet.Where(softDeletePredicate).Where(predicate);
         }
 
         public T GetById(object id)
         {
-            return _dbSet.Find(id);
+           
+            var entity = _dbSet.Find(id);
+            // TODO : should we return null when object is deleted 
+           // if (entity.IsDeleted == true) return null;    
+            return entity;
         }
 
         public async Task<T> GetByIdAsync(object id)
         {
-            return await _dbSet.FindAsync(id);
+            var entity = await _dbSet.FindAsync(id);
+            // TODO : should we return null when object is deleted
+            // if (entity.IsDeleted == true) return null;
+            return entity;
         }
 
         public T GetSingleByCondition(Expression<Func<T, bool>> predicate = null, Func<IQueryable, IOrderedQueryable> orderby = null, params string[] includeProperties)
         {
-            if (predicate is null) return _dbSet.ToList().FirstOrDefault();
-            return _dbSet.Where(predicate).FirstOrDefault();
+            if (predicate is null) return _dbSet.Where(softDeletePredicate).ToList().FirstOrDefault();
+            return  _dbSet.Where(softDeletePredicate).Where(predicate).FirstOrDefault();
         }
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate = null)
         {
-            if (predicate is null) return await _dbSet.AnyAsync();
-            return await _dbSet.AnyAsync(predicate);
+            if (predicate is null) return await _dbSet.Where(softDeletePredicate).AnyAsync();
+            return await _dbSet.Where(softDeletePredicate).AnyAsync(predicate);
         }
 
         public bool Any(Expression<Func<T, bool>> predicate = null)
         {
-            if (predicate is null) return _dbSet.Any();
-            return _dbSet.Any(predicate);
+            if (predicate is null) return _dbSet.Where(softDeletePredicate).Any();
+            return _dbSet.Where(softDeletePredicate).Any(predicate);
         }
 
-        public void Delete(Guid Id)
+        public void SoftDelete(Guid Id)
         {
             var entity = _dbSet.Find(Id);
+            entity.IsDeleted = true;
             _dbContext.Entry(entity).State = EntityState.Modified;
-           _dbContext.SaveChanges();
         }
 
-        public void run(Func<IQueryable, IOrderedQueryable> orderby)
-        {
-           _dbSet.Include(c => orderby).ToList();
-        }
     }
 }

@@ -60,5 +60,11 @@ namespace AthensLibrary.Service.Implementations
         {
             throw new NotImplementedException();
         }
+
+        public void Delete(Guid id)
+        {
+            _authorRepository.SoftDelete(id);
+            _unitofWork.SaveChanges();
+        }
     }
 }

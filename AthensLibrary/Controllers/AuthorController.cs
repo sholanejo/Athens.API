@@ -50,6 +50,13 @@ namespace AthensLibrary.Controllers
             return success ? Ok(message) : BadRequest(message);
         }
 
+        [HttpDelete("Delete/{id}")]
+        public IActionResult  Delete(Guid id)
+        {
+            _authorService.Delete(id);
+            return Ok();
+        }
+
         [HttpPatch("updateBook/{Id}")]
         public async Task<IActionResult> UpdateBook(Guid Id, [FromBody]JsonPatchDocument<BookUpdateDTO> model)
         {
