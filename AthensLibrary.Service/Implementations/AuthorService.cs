@@ -61,7 +61,7 @@ namespace AthensLibrary.Service.Implementations
 
         public void Delete(Guid id)
         {
-            _authorRepository.Delete(id);
+            _authorRepository.SoftDelete(id);
             _unitofWork.SaveChanges();
         }
     }
