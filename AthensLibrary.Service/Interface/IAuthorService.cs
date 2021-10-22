@@ -10,7 +10,7 @@ namespace AthensLibrary.Service.Interface
     {
         Task<Author> UpdateAuthor();
         AuthorDTO GetAuthorById(Guid id);
-        IEnumerable<Author> GetAuthorByName(string name);
+        Task <Author> GetAuthorByName(string name);
         IEnumerable<Author> GetAllAuthors();
         IEnumerable<Author> GetAuthorsByEmail(string email);
         void Delete(Guid id);

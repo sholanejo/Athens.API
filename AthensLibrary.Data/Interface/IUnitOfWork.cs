@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AthensLibrary.Model.Helpers.HelperInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace AthensLibrary.Data.Interface
 {
         public interface IUnitOfWork
         {
-            IRepository<TEntity> GetRepository<TEntity>() where TEntity : class;
+            IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, ISoftDelete;
             int SaveChanges();
             Task<int> SaveChangesAsync();
         }

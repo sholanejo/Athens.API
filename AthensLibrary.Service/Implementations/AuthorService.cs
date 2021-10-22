@@ -4,6 +4,7 @@ using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Helpers.HelperClasses;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,12 +42,12 @@ namespace AthensLibrary.Service.Implementations
 
         
 
-        public IEnumerable<Author> GetAuthorByName(string name)
+        public async Task<Author>  GetAuthorByName(string name)
         {
-            //first used the usermanger to find the user by name,
-            //then find an author that has a corresponding id with user found above
-            var authors = _authorRepository.GetByCondition(a => a.User.FullName == name);
-            return authors;
+            var userManager = _serviceFactory.GetServices<UserManager<User>>();
+            var user = (await userManager.FindByNameAsync(name));
+            var author = _authorRepository.GetSingleByCondition(a => a.UserId == user.Id);
+            return author;
         }
 
         public AuthorDTO GetAuthorById(Guid id)

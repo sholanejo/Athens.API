@@ -28,6 +28,12 @@ namespace AthensLibrary.Controllers
             _serviceFactory = serviceFactory;
         }
 
+        [HttpGet("authorName/{name}")]
+        public IActionResult GetAuthorByName(string name)
+        {
+            return Ok(_authorService.GetAuthorByName(name));
+        }
+
         [HttpGet("Authors")]
         public IActionResult GetAllAuthors()
         {
