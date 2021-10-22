@@ -19,7 +19,8 @@ namespace AthensLibrary.Service.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IServiceFactory _serviceFactory;        
-        private const int maxCheckoutValue = 10;        
+        private const int maxCheckoutValue = 10;
+        private readonly IRepository<User> _userRepository;
 
         public UserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper) : base (userManager,mapper)
         {
@@ -141,6 +142,12 @@ namespace AthensLibrary.Service.Implementations
             model.ApplyTo(userToPatch);
             _mapper.Map(userToPatch, userEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+        }
+
+        public void Delete(Guid id)
+        {
+            _userRepository.SoftDelete(id);
+            _unitOfWork.SaveChanges();
         }
     }
 }

@@ -51,5 +51,11 @@ namespace AthensLibrary.Service.Implementations
             _categoryRepository.Insert(category);
             _unitofWork.SaveChanges();
         }
+
+        public void Delete(Guid id)
+        {
+            _categoryRepository.SoftDelete(id);
+            _unitofWork.SaveChanges();
+        }
     }
 }

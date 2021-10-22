@@ -58,5 +58,11 @@ namespace AthensLibrary.Controllers
             var category = _categoryService.GetCategories();
             return Ok(category);
         }
+
+        public void Delete(Guid id)
+        {
+            _categoryService.SoftDelete(id);
+            _unitofWork.SaveChanges();
+        }
     }
 }

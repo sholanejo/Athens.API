@@ -10,6 +10,7 @@ namespace AthensLibrary.Service.Interface
     {
         Task<Book> BorrowBook();
         Task<(bool, string)> CreateBook(BookCreationDTO book);        
-        Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);        
+        Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
+        void Delete(Guid bookId);
     }
 }

@@ -23,5 +23,6 @@ namespace AthensLibrary.Service.Interface
         IEnumerable<Book> GetBooksByTitle(string bookTitle);
         Task<(bool success, string msg)> CheckOutABook(string BorrowerId, CheckOutABookDTO model);
         Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId);
+        void Delete(Guid id);
     }
 }
