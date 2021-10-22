@@ -24,23 +24,19 @@ namespace AthensLibrary.Service.Implementations
             _authorRepository = unitofWork.GetRepository<Author>();
             _serviceFactory = serviceFactory;
             _mapper = mapper;
-        }
-
-        
+        }        
 
         public IEnumerable<Author> GetAllAuthors()
         {
             return _authorRepository.GetAll().ToList();
         }
 
-        public IEnumerable<Author> GetAuthorsByEmail(string email)
+        public Author GetAuthorsByEmail(string email)
         {
-            var authors = _authorRepository.GetByCondition(a => a.User.Email == email);
-            return authors;
+            var author = _authorRepository.GetSingleByCondition(a => a.User.Email == email);
+            return author;
         }
-
         
-
         public IEnumerable<Author> GetAuthorByName(string name)
         {
             //first used the usermanger to find the user by name,
@@ -54,12 +50,7 @@ namespace AthensLibrary.Service.Implementations
             var author = _authorRepository.GetById(id);
             var authorM = _mapper.Map<AuthorDTO>(author);
             return authorM;
-        }
-
-        public Task<Author> UpdateAuthor()
-        {
-            throw new NotImplementedException();
-        }
+        }        
 
         public void Delete(Guid id)
         {

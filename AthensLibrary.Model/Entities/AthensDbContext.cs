@@ -11,8 +11,8 @@ namespace AthensLibrary.Model.Entities
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.SeedBooks();
-            builder.SeedCategory();
+           // builder.SeedBooks();
+           // builder.SeedCategory();
             base.OnModelCreating(builder);
         }
         public DbSet<Author> Authors { get; set; }

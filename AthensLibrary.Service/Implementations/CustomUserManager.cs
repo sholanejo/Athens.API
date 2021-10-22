@@ -13,15 +13,13 @@ using Microsoft.AspNetCore.Identity;
 namespace AthensLibrary.Model.Helpers.HelperClasses
 {
     public class CustomUserManager
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<CustomUserManager> _customUserRepo;
+    {        
         protected readonly UserManager<User> _userManager;
         protected readonly IMapper _mapper;
-        public CustomUserManager(UserManager<User> userManager, IMapper mapper)
+        public CustomUserManager(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
         {            
             _userManager = userManager;
-            _mapper = mapper;
+            _mapper = mapper;          
         }
         protected async Task<(bool success, string message, string userId)> CreateUserAsync(UserRegisterDTO model)
         {
@@ -40,12 +38,6 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
         {
             var user = await _userManager.FindByEmailAsync(email);
             await _userManager.DeleteAsync(user);
-        }
-
-        public void Delete(Guid id)
-        {
-            _customUserRepo.SoftDelete(id);
-            _unitOfWork.SaveChanges();
-        }
+        }      
     }
 }

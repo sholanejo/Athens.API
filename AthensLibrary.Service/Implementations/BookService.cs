@@ -12,6 +12,8 @@ using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Identity;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
+using AthensLibrary.Model.Enumerators;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -60,11 +62,7 @@ namespace AthensLibrary.Service.Implementations
             model.ApplyTo(bookToPatch);
             _mapper.Map(bookToPatch, bookEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Book update successfully");
-        }
-
-        public void Delete(Guid id)
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
-        }
+        }       
 
         public async Task<(bool, string)> CreateListOfBooks(IEnumerable<BookCreationDTO> books)
         {
@@ -77,8 +75,8 @@ namespace AthensLibrary.Service.Implementations
 
         public async Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)
         {
-            _bookRepository.SoftDelete(id);
-            _unitOfWork.SaveChanges();
+            _bookRepository.SoftDelete(bookId);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
         }
 
         public Book GetABookByIsbn(Guid Id)
@@ -169,6 +167,48 @@ namespace AthensLibrary.Service.Implementations
             borrowDetailToUpdate.ReturnDate = DateTime.Now;           
             book.CurrentBookCount++;
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book returned successfully");
+        }
+
+        public void Delete(Guid bookId)
+        {
+            throw new NotImplementedException();
+        }
+
+      
+
+        public async Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model)
+        {
+            var userRequest = new UserBookRequest
+            {
+                AuthorName = model.AuthorName,
+                BookTitle = model.BookTitle,
+                RequestType = RequestType.AddBookRequest.ToString()
+            };
+            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
+            userBookRequestRepo?.Add(userRequest);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+        }
+
+        public async Task<(bool success, string msg)> RequestABookDelete(UserBookDeleteRequestDTO model, string email)
+        {
+            var _userManager = _serviceFactory.GetServices<UserManager<User>>();
+            var userEntity = await _userManager.FindByEmailAsync(email);
+            var _books = _serviceFactory.GetServices<IBookService>().GetAllBooksByAnAuthor(email, new Model.RequestFeatures.BookParameters()).ToList();
+            var _bookrepo = _unitOfWork.GetRepository<Book>();
+            var _authorrepo = _unitOfWork.GetRepository<Author>();
+
+            if (userEntity is null) return (false, "user not found");
+            if (!_books.Any(a => a.Title == model.BookTitle)) return (false, "You currently do not have any book with that title");
+            var userRequest = new UserBookRequest
+            {
+                AuthorName = userEntity.FullName,
+                BookTitle = model.BookTitle,
+                RequestType = RequestType.AddBookRequest.ToString()
+            };
+            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
+            userBookRequestRepo?.Add(userRequest);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+
         }
     }
 }

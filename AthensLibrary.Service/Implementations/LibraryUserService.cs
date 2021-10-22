@@ -17,18 +17,18 @@ namespace AthensLibrary.Service.Implementations
     public class LibraryUserService : CustomUserManager,ILibraryUserService 
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILibraryUserService _LibraryUserService;
-        private readonly IRepository<User> userRepository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IServiceFactory _serviceFactory;
 
-        public LibraryUserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper):base(userManager,mapper)
+        public LibraryUserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper):base(userManager,mapper, unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
         }
 
-        
+        public void Delete(Guid id)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<(bool success, string msg)> Register(UserRegisterDTO model)
         {
@@ -50,37 +50,6 @@ namespace AthensLibrary.Service.Implementations
             }
             return (true, "Registration successfully");
         }
-
-        public async Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model)
-        {
-            var userRequest = new UserBookRequest
-            {
-                AuthorName = model.AuthorName,
-                BookTitle = model.BookTitle,
-                RequestType = RequestType.AddBookRequest.ToString()
-            };
-            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
-            userBookRequestRepo?.Add(userRequest);
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
-        }
-        public async Task<(bool success, string msg)> RequestABookDelete(UserBookDeleteRequestDTO model, string email)
-        {
-            var userEntity = await _userManager.FindByEmailAsync(email);
-            var _books = _serviceFactory.GetServices<IBookService>().GetAllBooksByAnAuthor(email, new Model.RequestFeatures.BookParameters()).ToList();
-            var _bookrepo = _unitOfWork.GetRepository<Book>();
-            var _authorrepo = _unitOfWork.GetRepository<Author>();
-
-            if (userEntity is null) return (false, "user not found");
-            if (!_books.Any(a => a.Title == model.BookTitle)) return (false, "You currently do not have any book with that title");
-            var userRequest = new UserBookRequest
-            {
-                AuthorName = userEntity.FullName,
-                BookTitle = model.BookTitle,
-                RequestType = RequestType.AddBookRequest.ToString()
-            };            
-            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
-            userBookRequestRepo?.Add(userRequest);
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
-        }
+       
     }
 }

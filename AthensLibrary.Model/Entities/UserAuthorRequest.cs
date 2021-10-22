@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Model.Helpers.HelperClasses;
+using AthensLibrary.Model.Helpers.HelperInterfaces;
 
 namespace AthensLibrary.Model.Entities
 {
-    public class UserAuthorRequest : UserRequest
-    { }
+    public class UserAuthorRequest : UserRequest, ISoftDelete
+    {
+        public bool IsDeleted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    }
 }

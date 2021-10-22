@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.RequestFeatures;
@@ -15,7 +16,6 @@ namespace AthensLibrary.Service.Interface
         Task<(bool, string)> CreateBook(BookCreationDTO book);
         Task<(bool, string)> CreateListOfBooks(IEnumerable<BookCreationDTO> books);
         Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
-
         //Get
         Book GetABookByIsbn(Guid Id);
         PagedList<Book> GetAllBooks(BookParameters bookParameters);
@@ -24,11 +24,12 @@ namespace AthensLibrary.Service.Interface
         IEnumerable<Book> GetAllBooksInACategory(string categoryName, BookParameters bookParameters);
         IEnumerable<Book> GetAllBooksPublishedInAYear(int publishYear, BookParameters bookParameters);
         IEnumerable<Book> GetBooksByTitle(string bookTitle, BookParameters bookParameters);
+        //post
         Task<(bool success, string msg)> CheckOutABook(string BorrowerId, CheckOutABookDTO model);
         Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId);
-        Task<(bool, string)> CreateBook(BookCreationDTO book);        
-        Task<(bool, string)> UpdateBook(Guid bookId, JsonPatchDocument<BookUpdateDTO> model);        
-        Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
+        Task<(bool, string)> UpdateBook(Guid bookId, JsonPatchDocument<BookUpdateDTO> model);
+        Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model);
+        Task<(bool success, string msg)> RequestABookDelete(UserBookDeleteRequestDTO model, string email);
         void Delete(Guid bookId);
     }
 }

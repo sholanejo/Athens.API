@@ -11,9 +11,7 @@ namespace AthensLibrary.Service.Interface
 {
     public interface ILibraryUserService
     {        
-        Task<(bool success, string msg)> Register(UserRegisterDTO model);
-        Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model);
-        Task<(bool success, string msg)> RequestABookDelete(UserBookDeleteRequestDTO model, string email);
+        Task<(bool success, string msg)> Register(UserRegisterDTO model);       
 
         void Delete(Guid id);
     }

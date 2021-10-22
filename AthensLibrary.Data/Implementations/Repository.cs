@@ -112,6 +112,7 @@ namespace AthensLibrary.Data.Implementations
             var entity = _dbSet.Find(Id);
             entity.IsDeleted = true;
             _dbContext.Entry(entity).State = EntityState.Modified;
+
         }
 
     }

@@ -1,9 +1,5 @@
-﻿using AthensLibrary.Service.Interface;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Filters.AuthorizationFilters;
@@ -14,6 +10,7 @@ using AthensLibrary.Model.RequestFeatures;
 using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -28,7 +25,7 @@ namespace AthensLibrary.Controllers
 
         public BookController(IServiceFactory serviceFactory)
         {
-           
+
             _serviceFactory = serviceFactory;
             _bookService = _serviceFactory.GetServices<IBookService>();
         }
@@ -49,7 +46,7 @@ namespace AthensLibrary.Controllers
         }
 
         //GET
-        [HttpGet(Name ="GetBooks")]
+        [HttpGet(Name = "GetBooks")]
         public IActionResult GetAllBooks([FromQuery] BookParameters bookParameters)
         {
             var result = _bookService.GetAllBooks(bookParameters);
@@ -58,26 +55,29 @@ namespace AthensLibrary.Controllers
         }
 
         [HttpGet("BooksByAuthor/{authorId}")]
-        public IActionResult GetAllBooksByAnAuthor(string authorId, BookParameters bookParameters) => 
+        public IActionResult GetAllBooksByAnAuthor(string authorId, BookParameters bookParameters) =>
             Ok(_bookService.GetAllBooksByAnAuthor(authorId, bookParameters));
 
-        [HttpGet("BooksByLoggedInAuthor"), Authorize(Policy ="AuthorRolePolicy")]
+        [HttpGet("BooksByLoggedInAuthor"), Authorize(Policy = "AuthorRolePolicy")]
         public IActionResult GetAllBooksByLoggedInAuthor(BookParameters bookParameters)
-        [HttpDelete("Delete/{id}")]
-        public IActionResult Delete(Guid id)
         {
             HttpContext.Session.TryGetValue("Email", out byte[] email);
             return Ok(_bookService.GetAllBooksByAnAuthor(Encoding.ASCII.GetString(email), bookParameters));
+        }
+        [HttpDelete("Delete/{id}")]
+        public IActionResult Delete(Guid id)
+        {
+
             _bookService.Delete(id);
             return Ok();
         }
 
         [HttpGet("BooksByCategory/{categoryName}")]
-        public IActionResult GetAllBooksByACategory(string categoryName, BookParameters bookParameters) => 
+        public IActionResult GetAllBooksByACategory(string categoryName, BookParameters bookParameters) =>
             Ok(_bookService.GetAllBooksInACategory(categoryName, bookParameters));
 
         [HttpGet("BooksByYear/{year}")]
-        public IActionResult GetAllBooksByYearPublished(int year, BookParameters bookParameters) => 
+        public IActionResult GetAllBooksByYearPublished(int year, BookParameters bookParameters) =>
             Ok(_bookService.GetAllBooksPublishedInAYear(year, bookParameters));
 
         [HttpGet("BooksByTitle/{bookTitle}")]
@@ -87,14 +87,14 @@ namespace AthensLibrary.Controllers
         [HttpGet("Book/{Id}")]
         public IActionResult GetBookByIsbn(Guid Id) => Ok(_bookService.GetABookByIsbn(Id));
 
-        [HttpPost(Name ="CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
+        [HttpPost(Name = "CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
         public async Task<IActionResult> CreateBook(BookCreationDTO model)
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
             var bookService = _serviceFactory.GetServices<IBookService>();
             var (success, message) = await bookService.CreateBook(model);
             return success ? Ok(message) : BadRequest(message);
-    }
+        }
 
         [HttpPost("CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
         public async Task<IActionResult> CreateBook(IEnumerable<BookCreationDTO> model)
@@ -106,11 +106,11 @@ namespace AthensLibrary.Controllers
         }
         [HttpPost("BookRequest"), MultiplePolicysAuthorize("LibraryUserRolePolicy;AuthorRolePolicy")]
         public async Task<IActionResult> RequestABook(UserBookRequestDTO model)
-        {           
+        {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            var booklibService = _serviceFactory.GetServices<ILibraryUserService>();
+            var booklibService = _serviceFactory.GetServices<IBookService>();
             var (success, message) = await booklibService.RequestABook(model);
-            return success ? Ok(message) : BadRequest(message);            
+            return success ? Ok(message) : BadRequest(message);
         }
         [HttpPost("BookDeleteRequest"), Authorize(Policy = "AuthorRolePolicy")]
         public async Task<IActionResult> RequestABookDelete(UserBookDeleteRequestDTO model)
@@ -118,11 +118,17 @@ namespace AthensLibrary.Controllers
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
             HttpContext.Session.TryGetValue("Email", out byte[] email);
             if (email.Length == 0) return NotFound("Email from last session not found");
-            var booklibService = _serviceFactory.GetServices<ILibraryUserService>();
-            var (success, message) = await booklibService.RequestABookDelete(model, Encoding.ASCII.GetString(email));
+            var (success, message) = await _bookService.RequestABookDelete(model, Encoding.ASCII.GetString(email));
             return success ? Ok(message) : BadRequest(message);
-   
-            //
+        }        
+
+        
+
+        [HttpPatch("updateBook/{Id}")]
+        public async Task<IActionResult> UpdateBook(Guid Id, [FromBody] JsonPatchDocument<BookUpdateDTO> model)
+        {           
+            var (success, message) = await _bookService.UpdateBook(Id, model);
+            return success ? Ok(message) : BadRequest(message);
         }
     }
 }

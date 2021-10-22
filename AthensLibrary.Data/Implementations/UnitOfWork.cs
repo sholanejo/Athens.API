@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.Helpers.HelperInterfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace AthensLibrary.Data.Implementations
@@ -14,7 +15,7 @@ namespace AthensLibrary.Data.Implementations
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
+        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, ISoftDelete
         {
             if (_repositories == null) _repositories = new Dictionary<Type, object>();
 
