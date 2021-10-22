@@ -58,6 +58,7 @@ namespace AthensLibrary.Service.Implementations
         {
             var bookEntity = _bookRepository.GetById(bookId);
             if (bookEntity is null) return (false, $"Book with Id {bookId} not found");
+            bookEntity.UpdatedAt = DateTime.Now;
             var bookToPatch = _mapper.Map<BookUpdateDTO>(bookEntity);
             model.ApplyTo(bookToPatch);
             _mapper.Map(bookToPatch, bookEntity);

@@ -6,6 +6,7 @@ using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AthensLibrary.Controllers
@@ -67,6 +68,14 @@ namespace AthensLibrary.Controllers
             await _unitofWork.SaveChangesAsync();
             return Ok("Categories Created Successfully");
         }
+
+        [HttpPatch("updateCategory/{Id}")]
+        public async Task<IActionResult> UpdateBook(Guid Id, [FromBody] JsonPatchDocument<CategoryCreationDTO> model)
+        {
+            var (success, message) = await _categoryService.UpdateCategory(Id, model);
+            return success ? Ok(message) : BadRequest(message);
+        }
+
         [HttpDelete("delete/{id}")]
         public IActionResult  Delete(Guid id)
         {
