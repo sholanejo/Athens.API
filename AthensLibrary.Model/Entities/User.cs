@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.Helpers.HelperClasses;
+using AthensLibrary.Model.Helpers.HelperInterfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace AthensLibrary.Model.Entities
 {
-    public class User : UserTimeStamp
+    public class User : UserTimeStamp, ISoftDelete
     {       
         public string FullName { get; set; }
         public Gender Gender { get; set; }        
@@ -14,6 +20,7 @@ namespace AthensLibrary.Model.Entities
         public string BorrowerId { get; set; }
         public byte BorrowCount { get; set; } = default;
         public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
     }
 }

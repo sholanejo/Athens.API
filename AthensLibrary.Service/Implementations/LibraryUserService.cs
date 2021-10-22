@@ -17,6 +17,9 @@ namespace AthensLibrary.Service.Implementations
     public class LibraryUserService : CustomUserManager,ILibraryUserService 
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILibraryUserService _LibraryUserService;
+        private readonly IRepository<User> userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IServiceFactory _serviceFactory;
 
         public LibraryUserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper):base(userManager,mapper)
@@ -24,6 +27,9 @@ namespace AthensLibrary.Service.Implementations
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
         }
+
+        
+
         public async Task<(bool success, string msg)> Register(UserRegisterDTO model)
         {
             //should a person get a token immediately after registering or they will need to login!! 

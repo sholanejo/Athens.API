@@ -8,6 +8,8 @@ namespace AthensLibrary.Data.Interface
 {
     public interface IRepository<T>
     {
+       
+
         T Add(T obj);
         public IEnumerable<T> AddRange(IEnumerable<T> obj);
         void Insert(T entity);
@@ -22,5 +24,6 @@ namespace AthensLibrary.Data.Interface
 
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate = null);
         bool Any(Expression<Func<T, bool>> predicate = null);
+        void SoftDelete(Guid Id);
     }
 }

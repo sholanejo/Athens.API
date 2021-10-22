@@ -22,7 +22,9 @@ namespace AthensLibrary.Service.Interface
         IEnumerable<Book> GetAllBooksInACategory(string categoryName);   
         IEnumerable<Book> GetAllBooksPublishedInAYear(int year);
         Book GetABookByIsbn(Guid Id);
-        IEnumerable<Book> GetBooksByTitle(string bookTitle);*/
-       
+        IEnumerable<Book> GetBooksByTitle(string bookTitle);
+        Task<(bool success, string msg)> CheckOutABook(string BorrowerId, CheckOutABookDTO model);
+        Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId);
+        void Delete(Guid id);
     }
 }

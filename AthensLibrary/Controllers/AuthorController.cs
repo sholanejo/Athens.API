@@ -8,6 +8,7 @@ using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -48,12 +49,31 @@ namespace AthensLibrary.Controllers
         [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")] 
         public IActionResult GetAuthorById(Guid Id)
         {
-            /*var author = _authorService.GetById(Id);
-            var authorDto = _mapper.Map<AuthorDTO>(author); //please let the service be able to do the mapping and return the dto here*/
-            return Ok();
-
-            //return Ok(_authorService.GetById(Id)) //this should be the only hting in this action  method
+            return Ok(_authorService.GetAuthorById(Id));
         }
-        //Get author by name        
+
+        [HttpPost("CreateBook")]
+        public async Task<IActionResult> CreateBook(BookCreationDTO model)
+        {
+            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
+            var bookService = _serviceFactory.GetServices<IBookService>();
+            var (success, message) = await bookService.CreateBook(model);
+            return success ? Ok(message) : BadRequest(message);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public IActionResult  Delete(Guid id)
+        {
+            _authorService.Delete(id);
+            return Ok();
+        }
+
+        [HttpPatch("updateBook/{Id}")]
+        public async Task<IActionResult> UpdateBook(Guid Id, [FromBody]JsonPatchDocument<BookUpdateDTO> model)
+        {
+            var bookService = _serviceFactory.GetServices<IBookService>();
+            var (success, message) = await bookService.UpdateBook(Id, model);
+            return success ? Ok(message) : BadRequest(message);
+        }
     }
 }

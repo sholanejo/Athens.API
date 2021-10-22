@@ -5,8 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Implementations;
 using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
+using AutoMapper;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -15,12 +17,14 @@ namespace AthensLibrary.Service.Implementations
         private readonly IUnitOfWork _unitofWork;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IServiceFactory _serviceFactory;
+        private readonly IMapper _mapper;
 
-        public CategoryService(IUnitOfWork unitofWork, IServiceFactory serviceFactory)
+        public CategoryService(IUnitOfWork unitofWork, IServiceFactory serviceFactory, IMapper mapper)
         {
             _unitofWork = unitofWork;
             _categoryRepository = unitofWork.GetRepository<Category>();
             _serviceFactory = serviceFactory;
+            _mapper = mapper;
 
         }
 
@@ -29,15 +33,18 @@ namespace AthensLibrary.Service.Implementations
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Category> GetCategories()
+        public IEnumerable<CategoryDto> GetCategories()
         {
-            return _categoryRepository.GetAll().ToList();
+            var allCategories = _categoryRepository.GetAll();
+            var categoryDto = _mapper.Map<IEnumerable<CategoryDto>>(allCategories);
+            return categoryDto;
         }
 
-        public Category GetCategoryById(Guid id)
+        public CategoryDto GetCategoryById(Guid id)
         {
             var category = _categoryRepository.GetById(id);
-            return category;
+            var categoryDto = _mapper.Map<CategoryDto>(category);
+            return categoryDto;
         }
 
         public Category GetCategoryByName(string name)
@@ -46,9 +53,16 @@ namespace AthensLibrary.Service.Implementations
             return category;
         }
 
-        public void AddCategory(Category category)
+        public async Task<(bool, string)> AddCategory(CategoryCreationDTO category)
         {
-            _categoryRepository.Insert(category);
+            var categoryEntity = _mapper.Map<Category>(category);
+            await _categoryRepository.AddAsync(categoryEntity);
+            return (await _unitofWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error") : (true, "Category Created successfully");
+        }
+
+        public void Delete(Guid id)
+        {
+            _categoryRepository.SoftDelete(id);
             _unitofWork.SaveChanges();
         }
     }

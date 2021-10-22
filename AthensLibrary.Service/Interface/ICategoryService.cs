@@ -1,8 +1,7 @@
-﻿using AthensLibrary.Model.Entities;
+﻿using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
+using AthensLibrary.Model.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AthensLibrary.Service.Interface
@@ -10,9 +9,10 @@ namespace AthensLibrary.Service.Interface
     public interface ICategoryService
     {
         Task<IEnumerable<Book>> GetAllBooksByCategory();
-        IEnumerable<Category> GetCategories();
+        IEnumerable<CategoryDto> GetCategories();
         Category GetCategoryByName(string name);
-        Category GetCategoryById(Guid id);
-        void AddCategory(Category category);
+        CategoryDto GetCategoryById(Guid id);
+        Task<(bool, string)> AddCategory(CategoryCreationDTO category);
+        void Delete();
     }
 }

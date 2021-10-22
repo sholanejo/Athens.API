@@ -1,4 +1,7 @@
-﻿using System;
+﻿using AthensLibrary.Service.Interface;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,9 +63,13 @@ namespace AthensLibrary.Controllers
 
         [HttpGet("BooksByLoggedInAuthor"), Authorize(Policy ="AuthorRolePolicy")]
         public IActionResult GetAllBooksByLoggedInAuthor(BookParameters bookParameters)
+        [HttpDelete("Delete/{id}")]
+        public IActionResult Delete(Guid id)
         {
             HttpContext.Session.TryGetValue("Email", out byte[] email);
             return Ok(_bookService.GetAllBooksByAnAuthor(Encoding.ASCII.GetString(email), bookParameters));
+            _bookService.Delete(id);
+            return Ok();
         }
 
         [HttpGet("BooksByCategory/{categoryName}")]
@@ -87,7 +94,7 @@ namespace AthensLibrary.Controllers
             var bookService = _serviceFactory.GetServices<IBookService>();
             var (success, message) = await bookService.CreateBook(model);
             return success ? Ok(message) : BadRequest(message);
-        }
+    }
 
         [HttpPost("CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
         public async Task<IActionResult> CreateBook(IEnumerable<BookCreationDTO> model)
@@ -114,7 +121,7 @@ namespace AthensLibrary.Controllers
             var booklibService = _serviceFactory.GetServices<ILibraryUserService>();
             var (success, message) = await booklibService.RequestABookDelete(model, Encoding.ASCII.GetString(email));
             return success ? Ok(message) : BadRequest(message);
-
+   
             //
         }
     }

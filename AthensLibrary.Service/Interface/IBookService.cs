@@ -5,6 +5,7 @@ using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.RequestFeatures;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AthensLibrary.Service.Interface
 {
@@ -25,5 +26,9 @@ namespace AthensLibrary.Service.Interface
         IEnumerable<Book> GetBooksByTitle(string bookTitle, BookParameters bookParameters);
         Task<(bool success, string msg)> CheckOutABook(string BorrowerId, CheckOutABookDTO model);
         Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId);
+        Task<(bool, string)> CreateBook(BookCreationDTO book);        
+        Task<(bool, string)> UpdateBook(Guid bookId, JsonPatchDocument<BookUpdateDTO> model);        
+        Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
+        void Delete(Guid bookId);
     }
 }

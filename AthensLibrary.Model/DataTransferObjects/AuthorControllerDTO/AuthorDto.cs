@@ -1,14 +1,14 @@
-﻿using AthensLibrary.Model.Entities;
+﻿using AthensLibrary.Model.Helpers.HelperInterfaces;
 using System;
 
 namespace AthensLibrary.Model.DataTransferObjects
 {
-    public class AuthorDTO
+    public class AuthorDTO : IReader
     {
         public Guid Id { get; set; }
         public bool IsActive { get; set; }
         public string UserId { get; set; }
-        public Guid BorrowerId { get; set; }
+        public string BorrowerId { get; set; }
         public bool IsDeleted { get; set; }
     }
 }
