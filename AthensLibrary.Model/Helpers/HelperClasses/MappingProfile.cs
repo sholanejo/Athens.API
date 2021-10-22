@@ -11,12 +11,13 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
     {
         public MappingProfile()
         {
-            CreateMap<Author, AuthorDTO>();
+            CreateMap<Author, AuthorDTO>().ReverseMap();
             CreateMap<Category, CategoryDto>();
+            CreateMap<CategoryCreationDTO, Category>().ReverseMap();
             CreateMap<LibraryUser, LibraryUserCreationDTO>();
             CreateMap<UserUpdateDTO, User>();
             CreateMap<UserRegisterDTO, User>();
-            CreateMap<Book, BookCreationDTO>();
+            CreateMap<BookCreationDTO, Book>();
             CreateMap<BookUpdateDTO, Book>();
             CreateMap<User, UserUpdateDTO>().ReverseMap();
         }

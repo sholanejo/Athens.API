@@ -1,6 +1,9 @@
 ﻿using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.DataTransferObjects;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperClasses;
 using AthensLibrary.Service.Interface;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,21 +14,19 @@ namespace AthensLibrary.Service.Implementations
     public class AuthorService : IAuthorService
     {
         private readonly IUnitOfWork _unitofWork;
+        private readonly IMapper _mapper;
         private readonly IRepository<Author> _authorRepository;
         private readonly IServiceFactory _serviceFactory;
 
-        public AuthorService(IUnitOfWork unitofWork, IServiceFactory serviceFactory)
+        public AuthorService(IUnitOfWork unitofWork, IServiceFactory serviceFactory, IMapper mapper)
         {
             _unitofWork = unitofWork;
             _authorRepository = unitofWork.GetRepository<Author>();
             _serviceFactory = serviceFactory;
+            _mapper = mapper;
         }
 
-        public void Create(string name, string email)
-        {
-            var author = new Author { };
-            _authorRepository.Insert(author);
-        }
+        
 
         public IEnumerable<Author> GetAllAuthors()
         {
@@ -48,10 +49,11 @@ namespace AthensLibrary.Service.Implementations
             return authors;
         }
 
-        public Author GetById(Guid id)
+        public AuthorDTO GetAuthorById(Guid id)
         {
             var author = _authorRepository.GetById(id);
-            return author;
+            var authorM = _mapper.Map<AuthorDTO>(author);
+            return authorM;
         }
 
         public Task<Author> UpdateAuthor()

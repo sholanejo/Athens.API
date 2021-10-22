@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
 using AthensLibrary.Model.Entities;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AthensLibrary.Service.Interface
 {
@@ -10,6 +11,7 @@ namespace AthensLibrary.Service.Interface
     {
         Task<Book> BorrowBook();
         Task<(bool, string)> CreateBook(BookCreationDTO book);        
+        Task<(bool, string)> UpdateBook(Guid bookId, JsonPatchDocument<BookUpdateDTO> model);        
         Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
         void Delete(Guid bookId);
     }
