@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Filters.ActionFilters;
+using AthensLibrary.Filters.AuthorizationFilters;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
@@ -24,7 +25,7 @@ namespace AthensLibrary.Controllers
             _serviceFactory = serviceFactory;
         }
 
-        [HttpPost("Register"), Authorize(Policy = "AdminRolePolicy")]
+        [HttpPost(Name ="Register")]
         public async Task<IActionResult> Register(UserRegisterDTO model)
         {
             //this method shoould use createAtRoute to return 201 and not 200, following rest pprinciples

@@ -8,8 +8,8 @@ namespace AthensLibrary.Filters.ActionFilters
 {
     public class ValidationFilterAttribute : IActionFilter
     {
-        private readonly ILogger _logger;
-        public ValidationFilterAttribute(ILogger logger)
+        private readonly ILogger<ValidationFilterAttribute> _logger;
+        public ValidationFilterAttribute(ILogger<ValidationFilterAttribute> logger)
         {
             _logger = logger;
         }

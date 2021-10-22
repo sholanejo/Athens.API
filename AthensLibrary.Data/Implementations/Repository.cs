@@ -24,6 +24,11 @@ namespace AthensLibrary.Data.Implementations
             _dbContext.Add(obj);
             return obj;
         }
+        public IEnumerable<T> AddRange(IEnumerable<T> obj)
+        {
+            _dbContext.AddRange(obj);
+            return obj;
+        }
 
         public void Insert(T entity)
         {

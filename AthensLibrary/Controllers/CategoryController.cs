@@ -26,7 +26,7 @@ namespace AthensLibrary.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost, Authorize(Policy = "AdminRolePolicy")]
+        [HttpPost(Name = "CreateCategory"), Authorize(Policy = "AdminRolePolicy")]
         public IActionResult CreateCategory(Category category)
         {
             var categoryEntity = _mapper.Map<Category>(category);
@@ -52,7 +52,7 @@ namespace AthensLibrary.Controllers
             return Ok(categoryDto);
         }
 
-        [HttpGet]
+        [HttpGet(Name ="GetCategories")]
         public IActionResult GetAllCategories()
         {
             var category = _categoryService.GetCategories();

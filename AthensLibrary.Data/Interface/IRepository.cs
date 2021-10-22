@@ -9,6 +9,7 @@ namespace AthensLibrary.Data.Interface
     public interface IRepository<T>
     {
         T Add(T obj);
+        public IEnumerable<T> AddRange(IEnumerable<T> obj);
         void Insert(T entity);
         Task<T> AddAsync(T obj);
         IEnumerable<T> GetAll();

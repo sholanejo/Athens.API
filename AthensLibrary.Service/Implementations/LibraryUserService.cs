@@ -1,23 +1,28 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.Helpers.HelperClasses;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace AthensLibrary.Service.Implementations
 {
     public class LibraryUserService : CustomUserManager,ILibraryUserService 
     {
-        private readonly IUnitOfWork _unitOfWork;       
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IServiceFactory _serviceFactory;
 
-        public LibraryUserService(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper):base(userManager,mapper)
+        public LibraryUserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper):base(userManager,mapper)
         {
-            _unitOfWork = unitOfWork;           
+            _unitOfWork = unitOfWork;
+            _serviceFactory = serviceFactory;
         }
         public async Task<(bool success, string msg)> Register(UserRegisterDTO model)
         {
@@ -38,6 +43,38 @@ namespace AthensLibrary.Service.Implementations
                 return (false, "Internal Db error, registration failed");
             }
             return (true, "Registration successfully");
-        }       
+        }
+
+        public async Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model)
+        {
+            var userRequest = new UserBookRequest
+            {
+                AuthorName = model.AuthorName,
+                BookTitle = model.BookTitle,
+                RequestType = RequestType.AddBookRequest.ToString()
+            };
+            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
+            userBookRequestRepo?.Add(userRequest);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+        }
+        public async Task<(bool success, string msg)> RequestABookDelete(UserBookDeleteRequestDTO model, string email)
+        {
+            var userEntity = await _userManager.FindByEmailAsync(email);
+            var _books = _serviceFactory.GetServices<IBookService>().GetAllBooksByAnAuthor(email, new Model.RequestFeatures.BookParameters()).ToList();
+            var _bookrepo = _unitOfWork.GetRepository<Book>();
+            var _authorrepo = _unitOfWork.GetRepository<Author>();
+
+            if (userEntity is null) return (false, "user not found");
+            if (!_books.Any(a => a.Title == model.BookTitle)) return (false, "You currently do not have any book with that title");
+            var userRequest = new UserBookRequest
+            {
+                AuthorName = userEntity.FullName,
+                BookTitle = model.BookTitle,
+                RequestType = RequestType.AddBookRequest.ToString()
+            };            
+            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
+            userBookRequestRepo?.Add(userRequest);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+        }
     }
 }
