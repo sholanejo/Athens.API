@@ -61,6 +61,11 @@ namespace AthensLibrary.Service.Implementations
             _bookRepository.SoftDelete(id);
             _unitOfWork.SaveChanges();
         }
+
+        public Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

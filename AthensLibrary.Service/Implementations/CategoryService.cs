@@ -65,5 +65,10 @@ namespace AthensLibrary.Service.Implementations
             _categoryRepository.SoftDelete(id);
             _unitofWork.SaveChanges();
         }
+
+        public void Delete()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
