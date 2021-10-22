@@ -5,10 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
+using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.RequestFeatures;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Identity;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
+using AthensLibrary.Model.Enumerators;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -18,6 +23,8 @@ namespace AthensLibrary.Service.Implementations
         private readonly IRepository<Book> _bookRepository;
         private readonly IMapper _mapper;
         private readonly IServiceFactory _serviceFactory;
+        private const int maxCheckoutValue = 10;
+
 
         public BookService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, IMapper mapper)
         {
@@ -25,6 +32,7 @@ namespace AthensLibrary.Service.Implementations
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
             _bookRepository = _unitOfWork.GetRepository<Book>();
+
         }
 
         public Task<Book> BorrowBook()
@@ -54,12 +62,153 @@ namespace AthensLibrary.Service.Implementations
             model.ApplyTo(bookToPatch);
             _mapper.Map(bookToPatch, bookEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Book update successfully");
+        }       
+
+        public async Task<(bool, string)> CreateListOfBooks(IEnumerable<BookCreationDTO> books)
+        {
+            //check that the category name actually exist
+            //check that the author that is being registerd with this bbok is in the db, is not deleted, he is active
+            var bookEntity = _mapper.Map<IEnumerable<Book>>(books);           
+            _bookRepository.AddRange(bookEntity);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
         }
 
-        public void Delete(Guid id)
+        public async Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)
         {
-            _bookRepository.SoftDelete(id);
-            _unitOfWork.SaveChanges();
+            _bookRepository.SoftDelete(bookId);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
+        }
+
+        public Book GetABookByIsbn(Guid Id)
+        {
+            return _unitOfWork.GetRepository<Book>().GetSingleByCondition(a => a.ID == Id);
+        }
+
+        public PagedList<Book> GetAllBooks(BookParameters bookParameters)
+        {
+            var books = _unitOfWork.GetRepository<Book>().GetAll().OrderBy(a => a.Title);
+            return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
+        }
+
+        public IEnumerable<Book> GetAllBooksByAnAuthor(Guid authorId, BookParameters bookParameters)
+        {
+            var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.AuthorId == authorId).OrderBy(a => a.Title);
+            return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
+        }
+
+        public IEnumerable<Book> GetAllBooksByAnAuthor(string identifier, BookParameters bookParameters)
+        {
+            var user = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.FullName == identifier || a.Email == identifier || a.Id == identifier);
+            var author = _unitOfWork.GetRepository<Author>().GetSingleByCondition(a => a.UserId == user.Id);
+            var books = GetAllBooksByAnAuthor(author.Id, bookParameters).OrderBy(a => a.Title);
+            return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
+        }
+
+        public IEnumerable<Book> GetAllBooksInACategory(string categoryName, BookParameters bookParameters)
+        {
+            var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.CategoryName.ToLower() == categoryName.ToLower()).OrderBy(a => a.Title);
+            return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
+
+        }
+
+        public IEnumerable<Book> GetAllBooksPublishedInAYear(int publishYear, BookParameters bookParameters)
+        {
+            var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.PublicationYear.Year == publishYear).OrderBy(a => a.Title);
+            return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
+        }
+
+        public IEnumerable<Book> GetBooksByTitle(string bookTitle, BookParameters bookParameters)
+        {
+            var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.Title == bookTitle).OrderBy(a => a.Title);
+            return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
+        }
+
+        public async Task<(bool success, string msg)> CheckOutABook(string borrowerId, CheckOutABookDTO model)
+        {
+            var _userManager = _serviceFactory.GetServices<UserManager<User>>(); 
+            var libraryUser = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.BorrowerId == borrowerId);
+            var borrowDetailRepo = _unitOfWork.GetRepository<BorrowDetail>();
+            var book = _unitOfWork.GetRepository<Book>().GetSingleByCondition(b => b.ID == model.BookId);
+            if (libraryUser is null) return (false, "User not found");
+            if (!libraryUser.IsActive) return (false, "User account is not Active, please contact AthensLibrary admin for more info!!");
+            if (libraryUser.BorrowCount++ > maxCheckoutValue) return (false, "Maximum number of books that can be checkedout has been reached!\nReturn a book and try again!");
+            if (book.IsDeleted) return (false, "Book unavailable");
+            if (borrowDetailRepo.Any(a => a.BorrowerId == borrowerId && a.BookId == model.BookId)) return (false, "You have already checked out this book");
+            libraryUser.BorrowCount++;
+            var AddBCresult = await _userManager.UpdateAsync(libraryUser);
+            if (!AddBCresult.Succeeded) return (false, "User borrow count update failed!! Checkout failed");
+            var borrowDETAIL = new BorrowDetail
+            {
+                BookId = model.BookId,
+                BorrowedOn = DateTime.Now,
+                BorrowerId = borrowerId,
+                CreatedAt = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(15),
+            };
+            borrowDetailRepo?.Add(borrowDETAIL);
+            book.CurrentBookCount--;
+            var affectedRow = await _unitOfWork.SaveChangesAsync();
+            if (affectedRow < 1)
+            {
+                libraryUser.BorrowCount--;
+                var reduceBCresult = await _userManager.UpdateAsync(libraryUser);
+                return (false, "Internal DB error, Checkout failed!!");
+            }
+            return (true, "Checkout succesful");
+        }
+
+        public async Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId)
+        {
+            //what if am trying to return a book that has been deleted
+            var borrowDetailRepo = _unitOfWork.GetRepository<BorrowDetail>();
+            var borrowDetailToUpdate = borrowDetailRepo.GetById(borrowDetailId);
+            var book = _unitOfWork.GetRepository<Book>().GetSingleByCondition(b => b.ID == borrowDetailToUpdate.BookId);
+            if (borrowDetailToUpdate is null) return (false, "Borrow Detail not found");
+            borrowDetailToUpdate.ReturnDate = DateTime.Now;           
+            book.CurrentBookCount++;
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book returned successfully");
+        }
+
+        public void Delete(Guid bookId)
+        {
+            throw new NotImplementedException();
+        }
+
+      
+
+        public async Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model)
+        {
+            var userRequest = new UserBookRequest
+            {
+                AuthorName = model.AuthorName,
+                BookTitle = model.BookTitle,
+                RequestType = RequestType.AddBookRequest.ToString()
+            };
+            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
+            userBookRequestRepo?.Add(userRequest);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+        }
+
+        public async Task<(bool success, string msg)> RequestABookDelete(UserBookDeleteRequestDTO model, string email)
+        {
+            var _userManager = _serviceFactory.GetServices<UserManager<User>>();
+            var userEntity = await _userManager.FindByEmailAsync(email);
+            var _books = _serviceFactory.GetServices<IBookService>().GetAllBooksByAnAuthor(email, new Model.RequestFeatures.BookParameters()).ToList();
+            var _bookrepo = _unitOfWork.GetRepository<Book>();
+            var _authorrepo = _unitOfWork.GetRepository<Author>();
+
+            if (userEntity is null) return (false, "user not found");
+            if (!_books.Any(a => a.Title == model.BookTitle)) return (false, "You currently do not have any book with that title");
+            var userRequest = new UserBookRequest
+            {
+                AuthorName = userEntity.FullName,
+                BookTitle = model.BookTitle,
+                RequestType = RequestType.AddBookRequest.ToString()
+            };
+            var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
+            userBookRequestRepo?.Add(userRequest);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+
         }
 
         public Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)

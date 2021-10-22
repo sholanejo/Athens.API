@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.Helpers.HelperClasses;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace AthensLibrary.Service.Implementations
@@ -14,15 +17,18 @@ namespace AthensLibrary.Service.Implementations
     public class LibraryUserService : CustomUserManager,ILibraryUserService 
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILibraryUserService _LibraryUserService;
-        private readonly IRepository<User> userRepository;
+        private readonly IServiceFactory _serviceFactory;
 
-        public LibraryUserService(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper):base(userManager,mapper)
+        public LibraryUserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper):base(userManager,mapper, unitOfWork)
         {
-            _unitOfWork = unitOfWork;           
+            _unitOfWork = unitOfWork;
+            _serviceFactory = serviceFactory;
         }
 
-        
+        public void Delete(Guid id)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<(bool success, string msg)> Register(UserRegisterDTO model)
         {
@@ -44,7 +50,6 @@ namespace AthensLibrary.Service.Implementations
             }
             return (true, "Registration successfully");
         }
-
        
     }
 }

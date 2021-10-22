@@ -31,6 +31,11 @@ namespace AthensLibrary.Data.Implementations
             _dbContext.Add(obj);
             return obj;
         }
+        public IEnumerable<T> AddRange(IEnumerable<T> obj)
+        {
+            _dbContext.AddRange(obj);
+            return obj;
+        }
 
         public void Insert(T entity)
         {
@@ -107,6 +112,7 @@ namespace AthensLibrary.Data.Implementations
             var entity = _dbSet.Find(Id);
             entity.IsDeleted = true;
             _dbContext.Entry(entity).State = EntityState.Modified;
+
         }
 
     }

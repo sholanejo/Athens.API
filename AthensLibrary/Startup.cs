@@ -35,7 +35,7 @@ namespace AthensLibrary
             services.AddAutoMapper(typeof(MappingProfile));
             services.ConfigureJWT(Configuration);
             services.ConfigureSession();
-
+            services.AddCustomMediaTypes();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -45,7 +45,7 @@ namespace AthensLibrary
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AthensLibrary v1"));
             }
-            app.ConfigureExceptionHandler();
+           // app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
             
             app.UseRouting();

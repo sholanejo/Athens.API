@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using AthensLibrary.Data.Implementations;
 using AthensLibrary.Data.Interface;
@@ -10,6 +11,7 @@ using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace AthensLibrary.Extensions
 {
     public static class MiddleWareExtension
-    {  
+    {
         public static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AthensDbContext>(options =>
@@ -44,7 +46,7 @@ namespace AthensLibrary.Extensions
             services.AddAuthorization(option => option.AddPolicy("LibraryUserRolePolicy", p => p.RequireRole(Roles.LibraryUser.ToString())));
             services.AddAuthorization(option => option.AddPolicy("AuthorRolePolicy", p => p.RequireRole(Roles.Author.ToString())));
             services.AddTransient<IServiceFactory, ServiceFactory>();
-            services.AddTransient<DbContext, AthensDbContext>();            
+            services.AddTransient<DbContext, AthensDbContext>();
             services.AddTransient<IAuthorService, AuthorService>();
             services.AddTransient<ILibraryUserService, LibraryUserService>();
             services.AddTransient<IBookService, BookService>();
@@ -59,7 +61,8 @@ namespace AthensLibrary.Extensions
             var jwtSettings = configuration.GetSection("JwtSettings");
             var secretKey = configuration["SecretKey"];
 
-            services.AddAuthentication(opt => { opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; }).AddJwtBearer(options => {
+            services.AddAuthentication(opt => { opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; }).AddJwtBearer(options =>
+            {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -81,9 +84,29 @@ namespace AthensLibrary.Extensions
                 Options.IdleTimeout = TimeSpan.FromMinutes(5);
                 Options.Cookie.HttpOnly = true;
                 Options.Cookie.IsEssential = true;
-            });           
+            });
+        }
+
+        public static void AddCustomMediaTypes(this IServiceCollection services)
+        {
+            services.Configure<MvcOptions>(config =>
+            {
+                var newtonsoftJsonOutputFormatter = config.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+
+                if (newtonsoftJsonOutputFormatter != null)
+                {
+                    newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.codemaze.hateoas+json");
+                    newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.codemaze.apiroot+json");
+                }
+                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
+
+                if (xmlOutputFormatter != null)
+                {
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.codemaze.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.codemaze.apiroot+xml");
+                }
+
+            });
         }
     }
-
-
 }

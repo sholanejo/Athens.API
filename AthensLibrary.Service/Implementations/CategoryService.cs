@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AthensLibrary.Data.Implementations;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
@@ -25,7 +22,6 @@ namespace AthensLibrary.Service.Implementations
             _categoryRepository = unitofWork.GetRepository<Category>();
             _serviceFactory = serviceFactory;
             _mapper = mapper;
-
         }
 
         public Task<IEnumerable<Book>> GetAllBooksByCategory()

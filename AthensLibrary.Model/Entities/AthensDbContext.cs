@@ -11,8 +11,8 @@ namespace AthensLibrary.Model.Entities
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.SeedBooks();
-            builder.SeedCategory();
+           // builder.SeedBooks();
+           // builder.SeedCategory();
             base.OnModelCreating(builder);
         }
         public DbSet<Author> Authors { get; set; }
@@ -23,16 +23,7 @@ namespace AthensLibrary.Model.Entities
         public DbSet<LibraryUser> LibraryUsers { get; set; }
         public DbSet<Category> Categories { get; set; }
 
-        //add the day a book was added
-        //an author should also be able to borrow a book
-        //all tables should have created at and created by
-        //add aadress
-        //scope your project
-        //category should not show as numbers on  vf,
-
-        //Authentication
-        //crud for all
-        //
+        
 
     }
 }

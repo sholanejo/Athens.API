@@ -1,13 +1,12 @@
-﻿using AthensLibrary.Data.Interface;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
-using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace AthensLibrary.Controllers
 {
@@ -28,7 +27,7 @@ namespace AthensLibrary.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost("addCategory")]
+        [HttpPost(Name = "CreateCategory"), Authorize(Policy = "AdminRolePolicy")]   
         public async Task<IActionResult> CreateCategory([FromBody]CategoryCreationDTO category)
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
@@ -51,7 +50,7 @@ namespace AthensLibrary.Controllers
             return Ok(categoryDto);
         }
 
-        [HttpGet("allCategories")]
+        [HttpGet(Name ="GetCategories")]
         public IActionResult GetAllCategories()
         {
              return Ok(_categoryService.GetCategories());
@@ -71,7 +70,7 @@ namespace AthensLibrary.Controllers
         [HttpDelete("delete/{id}")]
         public IActionResult  Delete(Guid id)
         {
-            _categoryService.Delete();
+            _categoryService.Delete(id);
             _unitofWork.SaveChanges();
             return Ok();
         }
