@@ -63,50 +63,50 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
                 IsDeleted = false,
-                PublicationYear = DateTime.Today.Subtract(new TimeSpan(10)),
+                PublicationYear = new DateTime(1998, 12, 30),
             };
             var book2 = new Book
             {
                 ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
                 AuthorId = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "Sammy the Dev",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
                 IsDeleted = false,
-                PublicationYear = DateTime.Today.Subtract(new TimeSpan(10)),
+                PublicationYear = new DateTime(1998, 12, 30),
             };
             var book3 = new Book
             {
-                ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
+                ID = new Guid("5c835629-2056-4549-aaa5-ab35d01bee0d"),
                 AuthorId = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "Alex the Dev",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
                 IsDeleted = false,
-                PublicationYear = DateTime.Today.Subtract(new TimeSpan(10)),
+                PublicationYear = new DateTime(1998, 12, 30),
             };
             var book4 = new Book
             {
-                ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
+                ID = new Guid("0ee79eed-6b39-4196-8ec3-61321db5dcba"),
                 AuthorId = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "Shola the Dev",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
                 IsDeleted = false,
-                PublicationYear = DateTime.Today.Subtract(new TimeSpan(10)),
+                PublicationYear = new DateTime(1998, 12, 30),
             };
             var book5 = new Book
             {
-                ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
+                ID = new Guid("460ac0c0-64ed-4b73-bfbe-fc546d2afe79"),
                 AuthorId = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "Gideon the Comrade",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
@@ -115,10 +115,10 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
             };
             var book6 = new Book
             {
-                ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
+                ID = new Guid("274fe8d0-2ce6-400a-8d7a-55a1dc6ce3b5"),
                 AuthorId = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "KC my gee",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
@@ -127,10 +127,10 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
             };
             var book7 = new Book
             {
-                ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
+                ID = new Guid("863bb0e8-7940-481a-a0e5-c591b8b76998"),
                 AuthorId = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "Chinedu Senior Man",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
@@ -139,10 +139,10 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
             };
             var book8 = new Book
             {
-                ID = new Guid("e670a86c-2019-423d-8abc-e59ea1ac05b6"),
+                ID = new Guid("e25b7422-d61b-46f4-a5a3-9227482594a5"),
                 AuthorId = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"),
                 CreatedAt = DateTime.Now,
-                Title = "Power of the mind",
+                Title = "Tochukwu the Writer",
                 CategoryName = "Inspiration",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
