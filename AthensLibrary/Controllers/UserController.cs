@@ -100,5 +100,12 @@ namespace AthensLibrary.Controllers
         [HttpGet("Book/{Id}")]
         public IActionResult GetBookByIsbn(Guid Id) => Ok(_userService.GetABookByIsbn(Id));
 
+        [HttpDelete("Delete/{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            _userService.Delete(id);
+            return Ok();
+        }
+
     }
 }

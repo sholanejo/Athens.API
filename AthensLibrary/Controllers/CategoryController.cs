@@ -68,5 +68,12 @@ namespace AthensLibrary.Controllers
             await _unitofWork.SaveChangesAsync();
             return Ok("Categories Created Successfully");
         }
+        [HttpDelete("delete/{id}")]
+        public IActionResult  Delete(Guid id)
+        {
+            _categoryService.Delete();
+            _unitofWork.SaveChanges();
+            return Ok();
+        }
     }
 }

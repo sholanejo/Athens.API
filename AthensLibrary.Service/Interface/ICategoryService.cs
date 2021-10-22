@@ -13,5 +13,6 @@ namespace AthensLibrary.Service.Interface
         Category GetCategoryByName(string name);
         CategoryDto GetCategoryById(Guid id);
         Task<(bool, string)> AddCategory(CategoryCreationDTO category);
+        void Delete();
     }
 }

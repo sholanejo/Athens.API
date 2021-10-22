@@ -13,12 +13,17 @@ namespace AthensLibrary.Service.Implementations
 {
     public class LibraryUserService : CustomUserManager,ILibraryUserService 
     {
-        private readonly IUnitOfWork _unitOfWork;       
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILibraryUserService _LibraryUserService;
+        private readonly IRepository<User> userRepository;
 
         public LibraryUserService(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper):base(userManager,mapper)
         {
             _unitOfWork = unitOfWork;           
         }
+
+        
+
         public async Task<(bool success, string msg)> Register(UserRegisterDTO model)
         {
             //should a person get a token immediately after registering or they will need to login!! 
@@ -38,6 +43,8 @@ namespace AthensLibrary.Service.Implementations
                 return (false, "Internal Db error, registration failed");
             }
             return (true, "Registration successfully");
-        }       
+        }
+
+       
     }
 }

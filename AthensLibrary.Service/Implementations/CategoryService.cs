@@ -59,5 +59,11 @@ namespace AthensLibrary.Service.Implementations
             await _categoryRepository.AddAsync(categoryEntity);
             return (await _unitofWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error") : (true, "Category Created successfully");
         }
+
+        public void Delete(Guid id)
+        {
+            _categoryRepository.SoftDelete(id);
+            _unitofWork.SaveChanges();
+        }
     }
 }

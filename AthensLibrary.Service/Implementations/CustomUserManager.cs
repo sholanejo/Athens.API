@@ -14,6 +14,8 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
 {
     public class CustomUserManager
     {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<CustomUserManager> _customUserRepo;
         protected readonly UserManager<User> _userManager;
         protected readonly IMapper _mapper;
         public CustomUserManager(UserManager<User> userManager, IMapper mapper)
@@ -38,6 +40,12 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
         {
             var user = await _userManager.FindByEmailAsync(email);
             await _userManager.DeleteAsync(user);
+        }
+
+        public void Delete(Guid id)
+        {
+            _customUserRepo.SoftDelete(id);
+            _unitOfWork.SaveChanges();
         }
     }
 }
