@@ -38,11 +38,10 @@ namespace AthensLibrary.Controllers
         [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")]
         public IActionResult GetCategoryById(Guid Id)
         {
-            var category = _categoryService.GetCategoryById(Id);
-            return Ok(category);
+            return Ok(_categoryService.GetCategoryById(Id));
         }
 
-        [HttpGet("categoryname/{name}")]
+        [HttpGet("categoryName/{name}")]
         public IActionResult GetCategoryByName(string name)
         {
             if (name == null) return BadRequest("Please input a valid category name");
@@ -54,8 +53,7 @@ namespace AthensLibrary.Controllers
         [HttpGet(Name ="GetCategories")]
         public IActionResult GetAllCategories()
         {
-            var category = _categoryService.GetCategories();
-            return Ok(category);
+             return Ok(_categoryService.GetCategories());
         }
 
         [HttpPost("categoryCollection")]
@@ -67,7 +65,7 @@ namespace AthensLibrary.Controllers
                 await _categoryService.AddCategory(category);
             }
             await _unitofWork.SaveChangesAsync();
-            return Ok("categories created successfully");
+            return Ok("Categories Created Successfully");
         }
         [HttpDelete("delete/{id}")]
         public IActionResult  Delete(Guid id)
