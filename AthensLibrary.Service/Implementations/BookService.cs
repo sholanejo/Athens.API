@@ -47,6 +47,12 @@ namespace AthensLibrary.Service.Implementations
             _mapper.Map(model, bookEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
         }
+
+        public void Delete(Guid id)
+        {
+            _bookRepository.SoftDelete(id);
+            _unitOfWork.SaveChanges();
+        }
     }
 }
 
