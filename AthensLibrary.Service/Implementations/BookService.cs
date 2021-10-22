@@ -171,7 +171,8 @@ namespace AthensLibrary.Service.Implementations
 
         public void Delete(Guid bookId)
         {
-            throw new NotImplementedException();
+            _bookRepository.SoftDelete(bookId);
+            _unitOfWork.SaveChanges();
         }
 
       
@@ -211,10 +212,7 @@ namespace AthensLibrary.Service.Implementations
 
         }
 
-        public Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
 
