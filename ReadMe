@@ -1,0 +1,38 @@
+Athens Library is a Comprehensive online and offline Library. The AthensLibrary API is a project that allows developers easily implement library-related features.
+
+Some of the technologies employed by the athens team are
+* .NET Core
+* ASP.NET CORE WEB API 
+* Entityframework core
+* Identity Api
+* JWT Authentication etc.
+
+The project contains basically
+* Library users
+* Authors
+* An Adminstrator
+
+This project gives a user-centered LIBRARY MANAGEMENT SYSTEM,
+ where library users can
+ * Checkout books.
+ * Return books.
+ * View all books in the library. 
+ * Search for any book by its title,author, category, year published and ISBN.
+ * Request for the addition of a book into the library
+ * Request to be made an author in the library etc
+
+ Authors can 
+ * Add books
+ * Update/edit information of books they added
+ * Update/edit their account  information
+ * Request that a book be deleted
+ * Checkout and return books
+
+The Admin is a superrole and so has authorization to do 90 percent of what authors and library users can do. The admin also has a lot of super admin feautures like
+* Adding an author
+* granting requests
+* Adding book categories
+* Soft deleting books, authors, Library users and book categories etc
+
+Please feel free to explore this project...
+MORE FEATURES COMING SOON!!!!
