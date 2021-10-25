@@ -115,14 +115,6 @@ namespace AthensLibrary.Controllers
             return success ? Ok(message) : BadRequest(message);
         }
 
-        [HttpPost("CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
-        public async Task<IActionResult> CreateBook(IEnumerable<BookCreationDTO> model)
-        {
-            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            var bookService = _serviceFactory.GetServices<IBookService>();
-            var (success, message) = await bookService.CreateListOfBooks(model);
-            return success ? Ok(message) : BadRequest(message);
-        }
         [HttpPost("BookRequest"), MultiplePolicysAuthorize("LibraryUserRolePolicy;AuthorRolePolicy")]
         public async Task<IActionResult> RequestABook(UserBookRequestDTO model)
         {

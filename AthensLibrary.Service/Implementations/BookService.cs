@@ -56,6 +56,7 @@ namespace AthensLibrary.Service.Implementations
         {
             var bookEntity = _bookRepository.GetById(bookId);
             if (bookEntity is null) return (false, $"Book with Id {bookId} not found");
+            bookEntity.UpdatedAt = DateTime.Now;
             var bookToPatch = _mapper.Map<BookUpdateDTO>(bookEntity);
             model.ApplyTo(bookToPatch);
             _mapper.Map(bookToPatch, bookEntity);
@@ -169,7 +170,8 @@ namespace AthensLibrary.Service.Implementations
 
         public void Delete(Guid bookId)
         {
-            throw new NotImplementedException();
+            _bookRepository.SoftDelete(bookId);
+            _unitOfWork.SaveChanges();
         }
 
       
@@ -208,6 +210,8 @@ namespace AthensLibrary.Service.Implementations
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
 
         }
+
+        
     }
 }
 

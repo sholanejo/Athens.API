@@ -6,6 +6,7 @@ using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -62,6 +63,20 @@ namespace AthensLibrary.Service.Implementations
             var (EntityToDelete, message) = _categoryRepository.SoftDelete(id);
             if (EntityToDelete is null) return (false, message);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Delete successful");
+        }
+            _categoryRepository.SoftDelete(id);
+            _unitofWork.SaveChanges();
+        }
+
+        public async Task<(bool, string)> UpdateCategory(Guid categoryId, JsonPatchDocument<CategoryCreationDTO> model)
+        {
+            var categoryEntity = _categoryRepository.GetById(categoryId);
+            if (categoryEntity is null) return (false, $"Book with Id {categoryId} not found");
+            categoryEntity.UpdatedAt = DateTime.Now;
+            var categoryToPatch = _mapper.Map<CategoryCreationDTO>(categoryEntity);
+            model.ApplyTo(categoryToPatch);
+            _mapper.Map(categoryToPatch, categoryEntity);
+            return (await _unitofWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Category update successfully");
         }
     }
 }
