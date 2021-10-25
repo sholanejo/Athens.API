@@ -64,9 +64,7 @@ namespace AthensLibrary.Service.Implementations
             if (EntityToDelete is null) return (false, message);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Delete successful");
         }
-            _categoryRepository.SoftDelete(id);
-            _unitofWork.SaveChanges();
-        }
+           
 
         public async Task<(bool, string)> UpdateCategory(Guid categoryId, JsonPatchDocument<CategoryCreationDTO> model)
         {
@@ -76,7 +74,7 @@ namespace AthensLibrary.Service.Implementations
             var categoryToPatch = _mapper.Map<CategoryCreationDTO>(categoryEntity);
             model.ApplyTo(categoryToPatch);
             _mapper.Map(categoryToPatch, categoryEntity);
-            return (await _unitofWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Category update successfully");
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Category update successfully");
         }
     }
 }
