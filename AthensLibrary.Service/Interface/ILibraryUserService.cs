@@ -11,10 +11,10 @@ namespace AthensLibrary.Service.Interface
 {
     public interface ILibraryUserService
     {        
-        Task<(bool success, string msg)> Register(UserRegisterDTO model);       
-
-        void Delete(Guid id);
+        Task<(bool success, string msg)> Register(UserRegisterDTO model);
+        Task<(bool, string)> Delete(Guid id);
+        LibraryUserDTO GetLibraryUserById(Guid id);
+        LibraryUserDTO GetLibraryUserByName(string name);
+        IEnumerable<LibraryUser> GetAllLibraryUsers();
     }
-
-
 }

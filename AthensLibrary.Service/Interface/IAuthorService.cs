@@ -9,10 +9,9 @@ namespace AthensLibrary.Service.Interface
     public interface IAuthorService
     {
         AuthorDTO GetAuthorById(Guid id);
-        Task <Author> GetAuthorByName(string name);
+        Author GetAuthorByName(string name);
         IEnumerable<Author> GetAllAuthors();
-        Author GetAuthorsByEmail(string email);
-        void Delete(Guid id);
-
+        Author GetAuthorByEmail(string email);
+        Task<(bool, string)> Delete(Guid id);
     }
 }

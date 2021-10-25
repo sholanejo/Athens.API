@@ -12,9 +12,8 @@ namespace AthensLibrary.Model.DataTransferObjects.BookControllerDTO
         [MaxLength(24)]
         [Required(ErrorMessage = "Please provide the Author of the book you are requesting")]
         public string AuthorName { get; set; }
-        [MinLength(5)]
-        [MaxLength(24)]
-        [Range(typeof(RequestType), "1", "2", ErrorMessage = "Please select the type of type of book request you want")]
+        
+       // [Range(typeof(RequestType), "1", "2", ErrorMessage = "Please select the type of type of book request you want")]
         public RequestType RequestType { get; set; }
     }
 }

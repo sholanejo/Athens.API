@@ -18,7 +18,7 @@ namespace AthensLibrary.Filters.ActionFilters
             var action = context.RouteData.Values["action"]; 
             var controller = context.RouteData.Values["controller"];
 
-            var param = context.ActionArguments.SingleOrDefault(x => x.Value.ToString().Contains("Dto")).Value;
+            var param = context.ActionArguments.SingleOrDefault(x => x.Value.ToString().Contains("DTO")).Value;
 
             if (param == null)
             {
@@ -35,7 +35,7 @@ namespace AthensLibrary.Filters.ActionFilters
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

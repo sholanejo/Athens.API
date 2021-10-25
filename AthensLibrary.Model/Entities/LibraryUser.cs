@@ -1,5 +1,4 @@
 ﻿using System;
-using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.Helpers.HelperInterfaces;
 
 namespace AthensLibrary.Model.Entities

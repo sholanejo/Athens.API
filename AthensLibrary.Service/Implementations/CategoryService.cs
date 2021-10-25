@@ -11,14 +11,14 @@ namespace AthensLibrary.Service.Implementations
 {
     public class CategoryService : ICategoryService
     {
-        private readonly IUnitOfWork _unitofWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IServiceFactory _serviceFactory;
         private readonly IMapper _mapper;
 
         public CategoryService(IUnitOfWork unitofWork, IServiceFactory serviceFactory, IMapper mapper)
         {
-            _unitofWork = unitofWork;
+            _unitOfWork = unitofWork;
             _categoryRepository = unitofWork.GetRepository<Category>();
             _serviceFactory = serviceFactory;
             _mapper = mapper;
@@ -52,14 +52,16 @@ namespace AthensLibrary.Service.Implementations
         public async Task<(bool, string)> AddCategory(CategoryCreationDTO category)
         {
             var categoryEntity = _mapper.Map<Category>(category);
-            await _categoryRepository.AddAsync(categoryEntity);
-            return (await _unitofWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error") : (true, "Category Created successfully");
-        }
-
-        public void Delete(Guid id)
-        {
-            _categoryRepository.SoftDelete(id);
-            _unitofWork.SaveChanges();
+            _categoryRepository.Add(categoryEntity);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error") : (true, "Category Created successfully");
         }        
+
+        public async Task<(bool, string)> Delete(Guid id)
+        {
+            //Check if an entity is already deleted!
+            var (EntityToDelete, message) = _categoryRepository.SoftDelete(id);
+            if (EntityToDelete is null) return (false, message);
+            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Delete successful");
+        }
     }
 }

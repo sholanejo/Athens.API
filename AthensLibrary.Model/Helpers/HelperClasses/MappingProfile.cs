@@ -1,10 +1,10 @@
-﻿using AthensLibrary.Model.DataTransferObjects;
+﻿using System.Collections.Generic;
+using AthensLibrary.Model.DataTransferObjects;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO;
-using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
+using AthensLibrary.Model.Entities;
 using AutoMapper;
-using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
-using System.Collections.Generic;
 
 namespace AthensLibrary.Model.Helpers.HelperClasses
 {
@@ -13,6 +13,7 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
         public MappingProfile()
         {
             CreateMap<Author, AuthorDTO>().ReverseMap();
+            CreateMap<LibraryUserDTO, LibraryUser>().ReverseMap();
             CreateMap<Category, CategoryDto>();
             CreateMap<CategoryCreationDTO, Category>().ReverseMap();
             CreateMap<LibraryUser, LibraryUserCreationDTO>();

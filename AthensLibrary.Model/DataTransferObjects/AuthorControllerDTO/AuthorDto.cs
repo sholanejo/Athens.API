@@ -3,12 +3,10 @@ using System;
 
 namespace AthensLibrary.Model.DataTransferObjects
 {
-    public class AuthorDTO : IReader
+    public class AuthorDTO 
     {
-        public Guid Id { get; set; }
-        public bool IsActive { get; set; }
-        public string UserId { get; set; }
-        public string BorrowerId { get; set; }
+        public Guid Id { get; set; }        
+        public string UserId { get; set; }       
         public bool IsDeleted { get; set; }
     }
 }

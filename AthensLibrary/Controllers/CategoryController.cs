@@ -27,15 +27,16 @@ namespace AthensLibrary.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost(Name = "CreateCategory"), Authorize(Policy = "AdminRolePolicy")]   
+       [HttpPost(Name = "CreateCategory"), Authorize(Policy = "AdminRolePolicy")] 
         public async Task<IActionResult> CreateCategory([FromBody]CategoryCreationDTO category)
         {
+            //Check category does not alreadt exist!!!!
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
             var (success, message) = await _categoryService.AddCategory(category);
             return success ? Ok(message) : BadRequest(message);
         }
 
-        [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")]
+       [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")]        
         public IActionResult GetCategoryById(Guid Id)
         {
             return Ok(_categoryService.GetCategoryById(Id));
@@ -67,6 +68,7 @@ namespace AthensLibrary.Controllers
             await _unitofWork.SaveChangesAsync();
             return Ok("Categories Created Successfully");
         }
+
         [HttpDelete("delete/{id}")]
         public IActionResult  Delete(Guid id)
         {

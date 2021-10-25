@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.Helpers.HelperClasses;
 using AthensLibrary.Model.RequestFeatures;
 using AthensLibrary.Service.Interface;
@@ -15,19 +16,17 @@ using Microsoft.AspNetCore.JsonPatch;
 namespace AthensLibrary.Service.Implementations
 {
     public class UserService : CustomUserManager, IUserService
-    {
-        private readonly IUnitOfWork _unitOfWork;
+    {        
         private readonly IServiceFactory _serviceFactory;        
         
         public UserService(IUnitOfWork unitOfWork, IServiceFactory serviceFactory, UserManager<User> userManager, IMapper mapper) : base(userManager, mapper, unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
+        {            
             _serviceFactory = serviceFactory;
         }       
 
         public async Task<(bool, string)> EnrollAuthor(UserRegisterDTO model)
         {
-            var (success, message, Id) = await CreateUserAsync(model);
+            var (success, message, Id) = await CreateUserAsync(model, Roles.Author.ToString());
             if (!success) return (false, "User not created");
             var author = new Author
             {
@@ -45,7 +44,8 @@ namespace AthensLibrary.Service.Implementations
                 return (false, "Internal Db error, registration failed");
             }
             return (true, "Author added successfully");
-        }        
+        }
+        
         public async Task<(bool, string)> UpdateUser(string identifier, JsonPatchDocument<UserUpdateDTO> model)
         {
             var userEntity = await _userManager.FindByEmailAsync(identifier);
@@ -55,8 +55,6 @@ namespace AthensLibrary.Service.Implementations
             model.ApplyTo(userToPatch);
             _mapper.Map(userToPatch, userEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
-        }
-
-      
+        }      
     }
 }

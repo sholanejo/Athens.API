@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO
+namespace AthensLibrary.Model.DataTransferObjects.BookControllerDTO
 {
     public class CheckOutABookDTO
-    {
-        public Guid Id { get; set; }
+    {        
         public Guid BookId { get; set; }        
         public DateTime BorrowedOn { get; set; } = DateTime.Now;
         public DateTime DueDate { get; set; } = DateTime.Now.AddDays(15); 

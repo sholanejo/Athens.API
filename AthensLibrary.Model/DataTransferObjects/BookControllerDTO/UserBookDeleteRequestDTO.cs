@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AthensLibrary.Model.Enumerators;
 
 namespace AthensLibrary.Model.DataTransferObjects.BookControllerDTO
 {
@@ -13,5 +10,7 @@ namespace AthensLibrary.Model.DataTransferObjects.BookControllerDTO
         [MinLength(5)]
         [MaxLength(24)]
         public string BookTitle { get; set; }
+        [Range(typeof(RequestType), "1", "2", ErrorMessage = "Please select the type of type of book request you want")]
+        public RequestType RequestType { get; set; }
     }
 }

@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
-using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
+using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.RequestFeatures;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Identity;
-using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
-using AthensLibrary.Model.Enumerators;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AthensLibrary.Service.Implementations
 {
@@ -47,7 +45,7 @@ namespace AthensLibrary.Service.Implementations
             var categoryService = _serviceFactory.GetServices<ICategoryService>();
             var author = authorService.GetAuthorById(book.AuthorId);
             var category = categoryService.GetCategoryByName(book.CategoryName);
-            if (author == null || author.IsActive == false || author.IsDeleted == true) return (false, $"Author with id:{book.AuthorId} does not exist, is inactive or is deleted");
+            if (author == null || author.IsDeleted == true) return (false, $"Author with id:{book.AuthorId} does not exist, is inactive or is deleted");
             if (category == null || category.CategoryName != book.CategoryName) return (false, $"Category with name:{book.CategoryName} does not exist. Please enter a valid category name");
             _bookRepository.Add(bookEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Book creation failed") : (true, "Book Created successfully");
@@ -90,13 +88,13 @@ namespace AthensLibrary.Service.Implementations
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
         }
 
-        public IEnumerable<Book> GetAllBooksByAnAuthor(Guid authorId, BookParameters bookParameters)
+        public PagedList<Book> GetAllBooksByAnAuthor(Guid authorId, BookParameters bookParameters)
         {
             var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.AuthorId == authorId).OrderBy(a => a.Title);
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
         }
 
-        public IEnumerable<Book> GetAllBooksByAnAuthor(string identifier, BookParameters bookParameters)
+        public PagedList<Book> GetAllBooksByAnAuthor(string identifier, BookParameters bookParameters)
         {
             var user = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.FullName == identifier || a.Email == identifier || a.Id == identifier);
             var author = _unitOfWork.GetRepository<Author>().GetSingleByCondition(a => a.UserId == user.Id);
@@ -104,20 +102,20 @@ namespace AthensLibrary.Service.Implementations
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
         }
 
-        public IEnumerable<Book> GetAllBooksInACategory(string categoryName, BookParameters bookParameters)
+        public PagedList<Book> GetAllBooksInACategory(string categoryName, BookParameters bookParameters)
         {
             var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.CategoryName.ToLower() == categoryName.ToLower()).OrderBy(a => a.Title);
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
 
         }
 
-        public IEnumerable<Book> GetAllBooksPublishedInAYear(int publishYear, BookParameters bookParameters)
+        public PagedList<Book> GetAllBooksPublishedInAYear(int publishYear, BookParameters bookParameters)
         {
             var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.PublicationYear.Year == publishYear).OrderBy(a => a.Title);
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
         }
 
-        public IEnumerable<Book> GetBooksByTitle(string bookTitle, BookParameters bookParameters)
+        public PagedList<Book> GetBooksByTitle(string bookTitle, BookParameters bookParameters)
         {
             var books = _unitOfWork.GetRepository<Book>().GetByCondition(a => a.Title == bookTitle).OrderBy(a => a.Title);
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
@@ -203,7 +201,7 @@ namespace AthensLibrary.Service.Implementations
             {
                 AuthorName = userEntity.FullName,
                 BookTitle = model.BookTitle,
-                RequestType = RequestType.AddBookRequest.ToString()
+                RequestType = RequestType.DeleteBookRequest.ToString()
             };
             var userBookRequestRepo = _unitOfWork.GetRepository<UserBookRequest>();
             userBookRequestRepo?.Add(userRequest);

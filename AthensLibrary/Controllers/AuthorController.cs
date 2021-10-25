@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AthensLibrary.Controllers
@@ -22,7 +20,7 @@ namespace AthensLibrary.Controllers
             _serviceFactory = serviceFactory;
         }        
 
-        [HttpPost(Name ="AddAuthor"), Authorize(Policy = "AdminRolePolicy")]
+       [HttpPost(Name ="AddAuthor"), Authorize(Policy = "AdminRolePolicy")]        
         //How can this method be generic to both libraryusers and authors
         public async Task<IActionResult> AddAuthor(UserRegisterDTO model)
         {
@@ -30,6 +28,8 @@ namespace AthensLibrary.Controllers
             var (success, message) = await _userService.EnrollAuthor(model);
             return success ? Ok(message) : BadRequest(message);
         }
+
+
         [HttpGet(Name ="GetAuthors")]
         public IActionResult GetAllAuthors()
         {
@@ -37,20 +37,26 @@ namespace AthensLibrary.Controllers
             return Ok(author);
         }
 
-        [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")] 
+
+        [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")]         
         public IActionResult GetAuthorById(Guid Id)
         {
             return Ok(_authorService.GetAuthorById(Id));
         }
 
+
         [HttpDelete("Delete/{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _authorService.Delete(id);
-            return Ok();
+            var (success, message)= await _authorService.Delete(id);
+            return success ? Ok(message) : BadRequest(message);
+
         }
 
-        //Get Author by NAme
-         
+        [HttpGet("name/{name}")]
+        public IActionResult GetAuthorByName(string name)
+        {           
+            return Ok( _authorService.GetAuthorByName(name));
+        }
     }
 }

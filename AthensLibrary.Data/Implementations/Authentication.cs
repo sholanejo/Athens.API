@@ -20,12 +20,15 @@ namespace AthensLibrary.Data.Implementations
 
         private User _user;
 
-        public AuthenticationManager(UserManager<User> userManager, IConfiguration configuration) { _userManager = userManager; _configuration = configuration; }
+        public AuthenticationManager(UserManager<User> userManager, IConfiguration configuration) 
+        { 
+            _userManager = userManager;
+            _configuration = configuration;
+        }
 
         public async Task<bool> ValidateUser(UserLoginDTO userForAuth)
         {
             _user = await _userManager.FindByNameAsync(userForAuth.Email);
-
             return (_user != null && await _userManager.CheckPasswordAsync(_user, userForAuth.Password));
         }
 

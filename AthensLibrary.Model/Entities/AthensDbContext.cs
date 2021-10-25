@@ -22,6 +22,8 @@ namespace AthensLibrary.Model.Entities
         public DbSet<BorrowDetail> BorrowDetail { get; set; }
         public DbSet<LibraryUser> LibraryUsers { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<UserBookRequest> UserBookRequests { get; set; }
+        public DbSet<UserAuthorRequest> userAuthorRequests { get; set; }
 
         
 

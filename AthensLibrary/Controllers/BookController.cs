@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AthensLibrary.Filters.AuthorizationFilters;
-using AthensLibrary.Model.DataTransferObjects.AuthorControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
-using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.RequestFeatures;
 using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +27,8 @@ namespace AthensLibrary.Controllers
             _serviceFactory = serviceFactory;
             _bookService = _serviceFactory.GetServices<IBookService>();
         }
-        [HttpPost("{BorrowerId}/CheckOutABook"), Authorize] //How can we use multiple policies without need to chain in startup
+
+        [HttpPost("{BorrowerId}/CheckOutABook"), Authorize] 
         public async Task<IActionResult> CheckOutABook(string BorrowerId, [FromBody] CheckOutABookDTO model)
         {
             var (success, message) = await _bookService.CheckOutABook(BorrowerId, model);
@@ -55,15 +54,22 @@ namespace AthensLibrary.Controllers
         }
 
         [HttpGet("BooksByAuthor/{authorId}")]
-        public IActionResult GetAllBooksByAnAuthor(string authorId, BookParameters bookParameters) =>
-            Ok(_bookService.GetAllBooksByAnAuthor(authorId, bookParameters));
+        public IActionResult GetAllBooksByAnAuthor(string authorId, [FromQuery] BookParameters bookParameters)
+        {
+            var result = _bookService.GetAllBooksByAnAuthor(authorId, bookParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+            return Ok(result);
+        }
 
         [HttpGet("BooksByLoggedInAuthor"), Authorize(Policy = "AuthorRolePolicy")]
-        public IActionResult GetAllBooksByLoggedInAuthor(BookParameters bookParameters)
+        public IActionResult GetAllBooksByLoggedInAuthor([FromQuery] BookParameters bookParameters)
         {
             HttpContext.Session.TryGetValue("Email", out byte[] email);
-            return Ok(_bookService.GetAllBooksByAnAuthor(Encoding.ASCII.GetString(email), bookParameters));
+            var result =_bookService.GetAllBooksByAnAuthor(Encoding.ASCII.GetString(email), bookParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+            return Ok(result);            
         }
+
         [HttpDelete("Delete/{id}")]
         public IActionResult Delete(Guid id)
         {
@@ -73,21 +79,34 @@ namespace AthensLibrary.Controllers
         }
 
         [HttpGet("BooksByCategory/{categoryName}")]
-        public IActionResult GetAllBooksByACategory(string categoryName, BookParameters bookParameters) =>
-            Ok(_bookService.GetAllBooksInACategory(categoryName, bookParameters));
+        public IActionResult GetAllBooksByACategory(string categoryName, [FromQuery] BookParameters bookParameters)
+        {
+            var result = _bookService.GetAllBooksInACategory(categoryName, bookParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+            return Ok(result);
+        }
 
         [HttpGet("BooksByYear/{year}")]
-        public IActionResult GetAllBooksByYearPublished(int year, BookParameters bookParameters) =>
-            Ok(_bookService.GetAllBooksPublishedInAYear(year, bookParameters));
+        public IActionResult GetAllBooksByYearPublished(int year, [FromQuery] BookParameters bookParameters)
+        {
+            var result = _bookService.GetAllBooksPublishedInAYear(year, bookParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+            return Ok(result);
+        }
 
         [HttpGet("BooksByTitle/{bookTitle}")]
-        public IActionResult GetAllBooksByTitle(string bookTitle, BookParameters bookParameters) =>
-            Ok(_bookService.GetBooksByTitle(bookTitle, bookParameters));
+        public IActionResult GetAllBooksByTitle(string bookTitle, [FromQuery] BookParameters bookParameters)
+        {
+            var result = _bookService.GetBooksByTitle(bookTitle, bookParameters);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+            return Ok(result);
+        }
 
-        [HttpGet("Book/{Id}")]
+        [HttpGet("{Id}")]
         public IActionResult GetBookByIsbn(Guid Id) => Ok(_bookService.GetABookByIsbn(Id));
 
         [HttpPost(Name = "CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
+        //What if i want to Create a book, and i am logged in as an author will i still need to provide my AuthorId
         public async Task<IActionResult> CreateBook(BookCreationDTO model)
         {
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
@@ -120,13 +139,11 @@ namespace AthensLibrary.Controllers
             if (email.Length == 0) return NotFound("Email from last session not found");
             var (success, message) = await _bookService.RequestABookDelete(model, Encoding.ASCII.GetString(email));
             return success ? Ok(message) : BadRequest(message);
-        }        
-
-        
+        }
 
         [HttpPatch("updateBook/{Id}")]
         public async Task<IActionResult> UpdateBook(Guid Id, [FromBody] JsonPatchDocument<BookUpdateDTO> model)
-        {           
+        {
             var (success, message) = await _bookService.UpdateBook(Id, model);
             return success ? Ok(message) : BadRequest(message);
         }

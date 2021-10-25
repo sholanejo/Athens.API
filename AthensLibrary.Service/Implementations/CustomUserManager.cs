@@ -16,17 +16,21 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
     {        
         protected readonly UserManager<User> _userManager;
         protected readonly IMapper _mapper;
+        protected readonly IUnitOfWork _unitOfWork;
         public CustomUserManager(UserManager<User> userManager, IMapper mapper, IUnitOfWork unitOfWork)
         {            
             _userManager = userManager;
-            _mapper = mapper;          
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
-        protected async Task<(bool success, string message, string userId)> CreateUserAsync(UserRegisterDTO model)
+        protected async Task<(bool success, string message, string userId)> CreateUserAsync(UserRegisterDTO model, string role )
         {
             var userEntity = _mapper.Map<User>(model);
+            userEntity.UserName = model.Email;
+            await _userManager.UpdateAsync(userEntity);
             var createUserResult = await _userManager.CreateAsync(userEntity, model.Password);
             if (!createUserResult.Succeeded) return (false, "Registration failed, User not created!!", null);
-            var addRoleResult = await _userManager.AddToRoleAsync(userEntity, Roles.LibraryUser.ToString());
+            var addRoleResult = await _userManager.AddToRoleAsync(userEntity, role);
             if (!addRoleResult.Succeeded)
             {
                 await deleteUser(model.Email);

@@ -69,7 +69,7 @@ namespace AthensLibrary.Data.Implementations
         public IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate = null, Func<IQueryable, IOrderedQueryable> orderby = null, int? skip = null, int? take = null, params string[] includeProperties)
         {
             if (predicate is null) return _dbSet.Where(softDeletePredicate).ToList();
-            return _dbSet.Where(softDeletePredicate).Where(predicate);
+            return _dbSet.Where(softDeletePredicate).Where(predicate).ToList();
         }
 
         public T GetById(object id)
@@ -107,12 +107,14 @@ namespace AthensLibrary.Data.Implementations
             return _dbSet.Where(softDeletePredicate).Any(predicate);
         }
 
-        public void SoftDelete(Guid Id)
+        public (T, string) SoftDelete(Guid Id)
         {
             var entity = _dbSet.Find(Id);
+            if (entity is null ) return (null, "Entity Not found"); 
+            if (entity.IsDeleted) return (null, "Already deleted"); 
             entity.IsDeleted = true;
             _dbContext.Entry(entity).State = EntityState.Modified;
-
+            return (entity, "Successful"); 
         }
 
     }

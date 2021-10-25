@@ -33,7 +33,7 @@ namespace AthensLibrary.Controllers
             var _userManager = _serviceFactory.GetServices<UserManager<User>>();
             if (!await _authManager.ValidateUser(user)) { return Unauthorized($"{nameof(Authenticate)}: Authentication failed. Wrong user name or password."); }
             var loggedInUser = await _userManager.FindByEmailAsync(user.Email);
-            HttpContext.Session.Set("Email", Encoding.ASCII.GetBytes(loggedInUser.Email));
+            HttpContext.Session.Set("Email", Encoding.ASCII.GetBytes(loggedInUser?.Email));
             return Ok(new { Token = await _authManager.CreateToken() });
         }        
 
