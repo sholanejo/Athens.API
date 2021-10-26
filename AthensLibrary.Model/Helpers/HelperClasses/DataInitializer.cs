@@ -48,7 +48,49 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
                 CategoryName = "Inspiration",
                 CreatedAt = DateTime.Now
             };
-            builder.Entity<Model.Entities.Category>().HasData(cate1);
+            var cate2 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb123-727b-4863-b690-a569b6af59eb"),
+                CategoryName = "Information Technology",
+                CreatedAt = DateTime.Now
+            };
+            var cate3 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb456-727b-4863-b690-a569b6af59eb"),
+                CategoryName = "Current Affairs",
+                CreatedAt = DateTime.Now
+            };
+            var cate4 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb789-727b-4863-b690-a569b6af59eb"),
+                CategoryName = "Religion",
+                CreatedAt = DateTime.Now
+            };
+            var cate5 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb327-123b-4863-b690-a569b6af59eb"),
+                CategoryName = "Science",
+                CreatedAt = DateTime.Now
+            };
+            var cate6 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb327-456b-4863-b690-a569b6af59eb"),
+                CategoryName = "Mathematic",
+                CreatedAt = DateTime.Now
+            };
+            var cate7 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb327-789b-4863-b690-a569b6af59eb"),
+                CategoryName = "Bezao",
+                CreatedAt = DateTime.Now
+            };
+            var cate8 = new Model.Entities.Category()
+            {
+                Id = new Guid("0d4bb327-727b-1233-b690-a569b6af59eb"),
+                CategoryName = "History",
+                CreatedAt = DateTime.Now
+            };
+            builder.Entity<Model.Entities.Category>().HasData(cate1, cate2, cate3, cate4, cate5, cate6, cate7, cate8);
         }
 
         public static void SeedBooks(this ModelBuilder builder)
@@ -119,7 +161,7 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
                 AuthorId = new Guid("4d9436fd-8434-4121-a71a-867c549e0253"),
                 CreatedAt = DateTime.Now,
                 Title = "KC my gee",
-                CategoryName = "Mathematix",
+                CategoryName = "Mathematic",
                 InitialBookCount = 500,
                 CurrentBookCount = 500,
                 IsDeleted = false,
