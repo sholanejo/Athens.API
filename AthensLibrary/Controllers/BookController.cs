@@ -28,15 +28,18 @@ namespace AthensLibrary.Controllers
             _bookService = _serviceFactory.GetServices<IBookService>();
         }
 
-        [HttpPost("{BorrowerId}/CheckOutABook"), Authorize] 
-        public async Task<IActionResult> CheckOutABook(string BorrowerId, [FromBody] CheckOutABookDTO model)
+        [HttpPost("{bookId}/CheckOut"), Authorize]
+        public async Task<IActionResult> CheckOutABook(Guid bookId)
         {
-            var (success, message) = await _bookService.CheckOutABook(BorrowerId, model);
+            HttpContext.Session.TryGetValue("Email", out byte[] email);
+            if (email is null) return NotFound("Cant find a logged in user!");
+            var model = new CheckOutABookDTO { Email = Encoding.ASCII.GetString(email) };            
+            var (success, message) = await _bookService.CheckOutABook(bookId, model);
             return success ? Ok(message) : BadRequest(message);
         }
 
         //PUT
-        [HttpPut("{BorrowDetailId}/ReturnABook"), Authorize]
+        [HttpPut("{borrowDetailId}/ReturnABook"), Authorize]
         public async Task<IActionResult> ReturnABook(Guid borrowDetailId)
         //what if i want to return a list of books
         {
@@ -70,7 +73,7 @@ namespace AthensLibrary.Controllers
             return Ok(result);            
         }
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("id/{id}")]
         public IActionResult Delete(Guid id)
         {
 
@@ -104,11 +107,12 @@ namespace AthensLibrary.Controllers
 
         [HttpGet("{Id}")]
         public IActionResult GetBookByIsbn(Guid Id) => Ok(_bookService.GetABookByIsbn(Id));
-
+        
         [HttpPost(Name = "CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
         //What if i want to Create a book, and i am logged in as an author will i still need to provide my AuthorId
         public async Task<IActionResult> CreateBook(BookCreationDTO model)
         {
+            //Add createdby, so we can tell authors ceation from Admin's
             if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
             var bookService = _serviceFactory.GetServices<IBookService>();
             var (success, message) = await bookService.CreateBook(model);
@@ -133,7 +137,7 @@ namespace AthensLibrary.Controllers
             return success ? Ok(message) : BadRequest(message);
         }
 
-        [HttpPatch("updateBook/{Id}")]
+        [HttpPatch("id/{Id}")]
         public async Task<IActionResult> UpdateBook(Guid Id, [FromBody] JsonPatchDocument<BookUpdateDTO> model)
         {
             var (success, message) = await _bookService.UpdateBook(Id, model);

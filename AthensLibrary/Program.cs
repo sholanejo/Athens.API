@@ -36,12 +36,7 @@ namespace AthensLibrary
                     if (context.Set<Author>().ToList().Count == 0)
                     {
                         await SeedAuthor.SeedAuthorAsync(userManager, roleManager, context);
-                    }
-
-                    if(context.Set<Author>().ToList().Count == 0)
-                    {
-                        await SeedAuthor.SeedAuthorAsync(userManager, roleManager, context);
-                    }
+                    }                  
                 }
                 catch (Exception ex)
                 {

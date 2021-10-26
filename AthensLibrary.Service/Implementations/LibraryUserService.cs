@@ -38,11 +38,7 @@ namespace AthensLibrary.Service.Implementations
             //should a person get a token immediately after registering or they will need to login!! 
             var (success, message, Id) = await CreateUserAsync(model, Roles.LibraryUser.ToString());
             if (!success) return (false, "User not created");
-            var libraryUser = new LibraryUser
-            {
-                BorrowerId = RandomItemGenerators.GenerateBorrowerId(),
-                UserId = Id
-            };           
+            var libraryUser = new LibraryUser { UserId = Id };           
             _libraryUserRepo.Add(libraryUser);
             var affectedRows = await _unitOfWork.SaveChangesAsync();
             if (affectedRows < 1)

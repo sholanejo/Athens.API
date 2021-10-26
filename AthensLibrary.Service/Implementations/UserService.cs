@@ -29,10 +29,8 @@ namespace AthensLibrary.Service.Implementations
             var (success, message, Id) = await CreateUserAsync(model, Roles.Author.ToString());
             if (!success) return (false, "User not created");
             var author = new Author
-            {
-                IsActive = true,
-                IsDeleted = false,
-                BorrowerId = RandomItemGenerators.GenerateBorrowerId(),
+            {               
+                IsDeleted = false,               
                 UserId = Id
             };
             var repo = _unitOfWork.GetRepository<Author>();

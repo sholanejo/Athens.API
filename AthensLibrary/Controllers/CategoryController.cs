@@ -58,7 +58,7 @@ namespace AthensLibrary.Controllers
              return Ok(_categoryService.GetCategories());
         }
 
-        [HttpPost("categoryCollection")]
+        [HttpPost("categoryCollection"), Authorize(Policy = "AdminRolePolicy")]
         public async Task<IActionResult> CreateCategoryCollection([FromBody] IEnumerable<CategoryCreationDTO> model)
         {
             var categoryEntities = _mapper.Map<IEnumerable<CategoryCreationDTO>>(model);
@@ -70,14 +70,14 @@ namespace AthensLibrary.Controllers
             return Ok("Categories Created Successfully");
         }
 
-        [HttpPatch("updateCategory/{Id}")]
-        public async Task<IActionResult> UpdateBook(Guid Id, [FromBody] JsonPatchDocument<CategoryCreationDTO> model)
+       [HttpPatch("id/{Id}"), Authorize(Policy = "AdminRolePolicy ")]       
+        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] JsonPatchDocument<CategoryCreationDTO> model)
         {
-            var (success, message) = await _categoryService.UpdateCategory(Id, model);
+            var (success, message) = await _categoryService.UpdateCategory(id, model);
             return success ? Ok(message) : BadRequest(message);
         }
 
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("id/{id}"), Authorize(Policy = "AdminRolePolicy")]
         public IActionResult  Delete(Guid id)
         {
             _categoryService.Delete(id);

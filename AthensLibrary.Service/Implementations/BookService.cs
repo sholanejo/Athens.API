@@ -18,7 +18,7 @@ namespace AthensLibrary.Service.Implementations
     public class BookService : IBookService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<Book> _bookRepository;       
         private readonly IMapper _mapper;
         private readonly IServiceFactory _serviceFactory;
         private const int maxCheckoutValue = 10;
@@ -29,8 +29,7 @@ namespace AthensLibrary.Service.Implementations
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _serviceFactory = serviceFactory;
-            _bookRepository = _unitOfWork.GetRepository<Book>();
-
+            _bookRepository = _unitOfWork.GetRepository<Book>();           
         }
 
         public Task<Book> BorrowBook()
@@ -40,17 +39,18 @@ namespace AthensLibrary.Service.Implementations
 
         public async Task<(bool, string)>  CreateBook(BookCreationDTO book)
         {
+            // A person shouldnt be able to add a publish date that is in the future
+            // current count at this point must always equal initial count, shouldnt be in DTO
             var bookEntity = _mapper.Map<Book>(book);
             var authorService = _serviceFactory.GetServices<IAuthorService>();
             var categoryService = _serviceFactory.GetServices<ICategoryService>();
             var author = authorService.GetAuthorById(book.AuthorId);
             var category = categoryService.GetCategoryByName(book.CategoryName);
             if (author == null || author.IsDeleted == true) return (false, $"Author with id:{book.AuthorId} does not exist, is inactive or is deleted");
-            if (category == null || category.CategoryName != book.CategoryName) return (false, $"Category with name:{book.CategoryName} does not exist. Please enter a valid category name");
+            if (category == null || category.CategoryName.ToLower() != book.CategoryName.ToLower()) return (false, $"Category with name:{book.CategoryName} does not exist. Please enter a valid category name");
             _bookRepository.Add(bookEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Book creation failed") : (true, "Book Created successfully");
-        } 
-        
+        }         
 
         public async Task<(bool, string)> UpdateBook(Guid bookId, JsonPatchDocument<BookUpdateDTO> model)
         {
@@ -71,13 +71,7 @@ namespace AthensLibrary.Service.Implementations
             _bookRepository.AddRange(bookEntity);
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
         }
-
-        public async Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model)
-        {
-            _bookRepository.SoftDelete(bookId);
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book Created successfully");
-        }
-
+      
         public Book GetABookByIsbn(Guid Id)
         {
             return _unitOfWork.GetRepository<Book>().GetSingleByCondition(a => a.ID == Id);
@@ -122,25 +116,25 @@ namespace AthensLibrary.Service.Implementations
             return PagedList<Book>.ToPagedList(books, bookParameters.PageNumber, bookParameters.PageSize);
         }
 
-        public async Task<(bool success, string msg)> CheckOutABook(string borrowerId, CheckOutABookDTO model)
+        public async Task<(bool success, string msg)> CheckOutABook(Guid bookId, CheckOutABookDTO model)
         {
-            var _userManager = _serviceFactory.GetServices<UserManager<User>>(); 
-            var libraryUser = _unitOfWork.GetRepository<User>().GetSingleByCondition(a => a.BorrowerId == borrowerId);
+            var _userManager = _serviceFactory.GetServices<UserManager<User>>();
+            var borrower = await _userManager.FindByEmailAsync(model.Email);
             var borrowDetailRepo = _unitOfWork.GetRepository<BorrowDetail>();
-            var book = _unitOfWork.GetRepository<Book>().GetSingleByCondition(b => b.ID == model.BookId);
-            if (libraryUser is null) return (false, "User not found");
-            if (!libraryUser.IsActive) return (false, "User account is not Active, please contact AthensLibrary admin for more info!!");
-            if (libraryUser.BorrowCount++ > maxCheckoutValue) return (false, "Maximum number of books that can be checkedout has been reached!\nReturn a book and try again!");
+            var book = _unitOfWork.GetRepository<Book>().GetSingleByCondition(b => b.ID == bookId);
+            if (borrower is null) return (false, "User not found");
+            if (!borrower.IsActive) return (false, "User account is not Active, please contact AthensLibrary admin for more info!!");
+            if (borrower.BorrowCount++ > maxCheckoutValue) return (false, "Maximum number of books that can be checkedout has been reached!\nReturn a book and try again!");
             if (book.IsDeleted) return (false, "Book unavailable");
-            if (borrowDetailRepo.Any(a => a.BorrowerId == borrowerId && a.BookId == model.BookId)) return (false, "You have already checked out this book");
-            libraryUser.BorrowCount++;
-            var AddBCresult = await _userManager.UpdateAsync(libraryUser);
+            if (borrowDetailRepo.Any(a => a.BorrowerId ==borrower.BorrowerId && a.BookId == bookId)) return (false, "You have already checked out this book");
+            //borrower.BorrowCount++;
+            var AddBCresult = await _userManager.UpdateAsync(borrower);
             if (!AddBCresult.Succeeded) return (false, "User borrow count update failed!! Checkout failed");
             var borrowDETAIL = new BorrowDetail
             {
-                BookId = model.BookId,
+                BookId = bookId,
                 BorrowedOn = DateTime.Now,
-                BorrowerId = borrowerId,
+                BorrowerId = borrower.BorrowerId,
                 CreatedAt = DateTime.Now,
                 DueDate = DateTime.Now.AddDays(15),
             };
@@ -149,8 +143,8 @@ namespace AthensLibrary.Service.Implementations
             var affectedRow = await _unitOfWork.SaveChangesAsync();
             if (affectedRow < 1)
             {
-                libraryUser.BorrowCount--;
-                var reduceBCresult = await _userManager.UpdateAsync(libraryUser);
+                borrower.BorrowCount--;
+                var reduceBCresult = await _userManager.UpdateAsync(borrower);
                 return (false, "Internal DB error, Checkout failed!!");
             }
             return (true, "Checkout succesful");
@@ -158,12 +152,15 @@ namespace AthensLibrary.Service.Implementations
 
         public async Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId)
         {
+            //use his borrowId and book id to get a borrow detail to update 
+
             //what if am trying to return a book that has been deleted
             var borrowDetailRepo = _unitOfWork.GetRepository<BorrowDetail>();
             var borrowDetailToUpdate = borrowDetailRepo.GetById(borrowDetailId);
             var book = _unitOfWork.GetRepository<Book>().GetSingleByCondition(b => b.ID == borrowDetailToUpdate.BookId);
             if (borrowDetailToUpdate is null) return (false, "Borrow Detail not found");
-            borrowDetailToUpdate.ReturnDate = DateTime.Now;           
+            borrowDetailToUpdate.ReturnDate = DateTime.Now;
+            borrowDetailToUpdate.IsDeleted = true;
             book.CurrentBookCount++;
             return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, return book failed") : (true, "Book returned successfully");
         }
@@ -172,9 +169,7 @@ namespace AthensLibrary.Service.Implementations
         {
             _bookRepository.SoftDelete(bookId);
             _unitOfWork.SaveChanges();
-        }
-
-      
+        }            
 
         public async Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model)
         {

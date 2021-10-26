@@ -12,8 +12,7 @@ namespace AthensLibrary.Service.Interface
     {
         Task<Book> BorrowBook();
         Task<(bool, string)> CreateBook(BookCreationDTO book);
-        Task<(bool, string)> CreateListOfBooks(IEnumerable<BookCreationDTO> books);
-        Task<(bool, string)> UpdateBook(Guid bookId, BookUpdateDTO model);
+        Task<(bool, string)> CreateListOfBooks(IEnumerable<BookCreationDTO> books);        
         //Get
         Book GetABookByIsbn(Guid Id);
         PagedList<Book> GetAllBooks(BookParameters bookParameters);
@@ -23,7 +22,7 @@ namespace AthensLibrary.Service.Interface
         PagedList<Book> GetAllBooksPublishedInAYear(int publishYear, BookParameters bookParameters);
         PagedList<Book> GetBooksByTitle(string bookTitle, BookParameters bookParameters);
         //post
-        Task<(bool success, string msg)> CheckOutABook(string BorrowerId, CheckOutABookDTO model);
+        Task<(bool success, string msg)> CheckOutABook(Guid bookId, CheckOutABookDTO model);
         Task<(bool success, string msg)> ReturnABook(Guid borrowDetailId);
         Task<(bool, string)> UpdateBook(Guid bookId, JsonPatchDocument<BookUpdateDTO> model);
         Task<(bool success, string msg)> RequestABook(UserBookRequestDTO model);

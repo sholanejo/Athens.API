@@ -1,5 +1,6 @@
 ﻿using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
+using AthensLibrary.Model.Helpers.HelperClasses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,17 +20,23 @@ namespace AthensLibrary.Configurations
                 Email = "alexking@gmail.com",
                 PhoneNumber = "07031204544",
                 EmailConfirmed = true,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
+                IsActive = true,
+                IsDeleted = false,
+                BorrowerId = RandomItemGenerators.GenerateBorrowerId()
             };
 
             var author2 = new User
             {
                 UserName = "strategicsammy@gmail.com",
                 FullName = "Strategic Sammy",
-                Email = "sammystrategic@gmail.com",
+                Email = "strategicsammy@gmail.com",
                 PhoneNumber = "07031204544",
                 EmailConfirmed = true,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
+                IsActive = true,
+                IsDeleted = false,
+                BorrowerId = RandomItemGenerators.GenerateBorrowerId()
             };
 
             var author3 = new User
@@ -39,7 +46,10 @@ namespace AthensLibrary.Configurations
                 Email = "queenathena@gmail.com",
                 PhoneNumber = "07031204544",
                 EmailConfirmed = true,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
+                IsActive = true,
+                IsDeleted = false,
+                BorrowerId = RandomItemGenerators.GenerateBorrowerId()
             };
 
             var author4 = new User
@@ -49,7 +59,10 @@ namespace AthensLibrary.Configurations
                 Email = "elonmusk@tesla.com",
                 PhoneNumber = "07031204544",
                 EmailConfirmed = true,
-                PhoneNumberConfirmed = true
+                PhoneNumberConfirmed = true,
+                IsActive = true,
+                IsDeleted = false,
+                BorrowerId = RandomItemGenerators.GenerateBorrowerId()
             };
 
             if (authorManager.Users.All(a => a.Id != author1.Id))
@@ -79,10 +92,10 @@ namespace AthensLibrary.Configurations
                     {
                         context.Authors.AddRange
                             (
-                            new Author { Id = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"), UserId = author1.Id, IsActive = true, IsDeleted = false },
-                            new Author { Id = new Guid("7d4bc279-823a-4fe3-b62d-62568528c2f2"), UserId = author2.Id, IsActive = true, IsDeleted = false },
-                            new Author { Id = new Guid("cb5a2153-6447-4195-824f-6f04cac88718"), UserId = author3.Id, IsActive = true, IsDeleted = false },
-                            new Author { Id = new Guid("cb5a1234-1234-4195-824f-6f04cac88888"), UserId = author4.Id, IsActive = true, IsDeleted = false }
+                            new Author { Id = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"), UserId = author1.Id,  IsDeleted = false },
+                            new Author { Id = new Guid("7d4bc279-823a-4fe3-b62d-62568528c2f2"), UserId = author2.Id,  IsDeleted = false },
+                            new Author { Id = new Guid("cb5a2153-6447-4195-824f-6f04cac88718"), UserId = author3.Id,  IsDeleted = false },
+                            new Author { Id = new Guid("cb5a1234-1234-4195-824f-6f04cac88888"), UserId = author4.Id,  IsDeleted = false }
                             );
                         context.SaveChanges();
                     }

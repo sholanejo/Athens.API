@@ -27,6 +27,8 @@ namespace AthensLibrary.Model.Helpers.HelperClasses
         {
             var userEntity = _mapper.Map<User>(model);
             userEntity.UserName = model.Email;
+            userEntity.IsActive = true;
+            userEntity.BorrowerId = RandomItemGenerators.GenerateBorrowerId();
             await _userManager.UpdateAsync(userEntity);
             var createUserResult = await _userManager.CreateAsync(userEntity, model.Password);
             if (!createUserResult.Succeeded) return (false, "Registration failed, User not created!!", null);
