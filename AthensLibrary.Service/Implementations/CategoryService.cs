@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.JsonPatch;
 
 namespace AthensLibrary.Service.Implementations
 {
+
     public class CategoryService : ICategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -43,11 +44,11 @@ namespace AthensLibrary.Service.Implementations
              _categoryRepository.GetSingleByCondition(c => c.CategoryName == name);           
        
 
-        public ReturnModel AddCategory(CategoryCreationDTO category)
+        public async Task<ReturnModel> AddCategory(CategoryCreationDTO category)
         {
             var categoryEntity = _mapper.Map<Category>(category);
 
-            _categoryRepository.Add(categoryEntity);
+            await _categoryRepository.AddAsync(categoryEntity);
 
             return new ReturnModel { Success = false, Message = "Category created successfully" };
         }        

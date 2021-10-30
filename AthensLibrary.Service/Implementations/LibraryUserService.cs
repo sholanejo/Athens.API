@@ -14,7 +14,8 @@ using Microsoft.AspNetCore.Identity;
 namespace AthensLibrary.Service.Implementations
 {
     public class LibraryUserService : CustomUserManager,ILibraryUserService 
-    {        
+    {  
+        
         private readonly IServiceFactory _serviceFactory;
         private readonly IRepository<LibraryUser> _libraryUserRepo;
         private readonly IRepository<User> _userRepo;
@@ -33,15 +34,20 @@ namespace AthensLibrary.Service.Implementations
         {
             //should a person get a token immediately after registering or they will need to login!! 
             var (success, message, Id) = await CreateUserAsync(model, Roles.LibraryUser.ToString());
-            if (!success) return new ReturnModel (false, "User not created");
-            var libraryUser = new LibraryUser { UserId = Id };           
-            _libraryUserRepo.Add(libraryUser);
-            var affectedRows = await _unitOfWork.SaveChangesAsync();
-            if (affectedRows < 1)
+
+            if (!success) 
+                return new ReturnModel (false, "User not created");
+
+            var libraryUser = new LibraryUser { UserId = Id };
+            
+            var result = await _libraryUserRepo.AddAsync(libraryUser);  
+            
+            if (result is null)
             {
                 await deleteUser(model.Email);
                 return new ReturnModel(false, "Internal Db error, registration failed");
             }
+
             return new ReturnModel(true, "Registration successfully");
         }
 
@@ -53,15 +59,21 @@ namespace AthensLibrary.Service.Implementations
         public LibraryUserDTO GetLibraryUserByName(string name)
         {          
             var user = _userRepo.GetSingleByCondition(a => a.FullName == name);
-            var libraryUser = _libraryUserRepo.GetByCondition(a => a.UserId == user.Id).SingleOrDefault();
+
+            var libraryUser = _libraryUserRepo
+                .GetSingleByCondition(a => a.UserId == user.Id);               
+
             var libraryUserToReturn= _mapper.Map<LibraryUserDTO>(libraryUser);
+
             return libraryUserToReturn;
         }
 
         public LibraryUserDTO GetLibraryUserById(Guid id)
         {
             var libraryUser = _libraryUserRepo.GetById(id);
+
             var libraryUserToReturn = _mapper.Map<LibraryUserDTO>(libraryUser);
+
             return libraryUserToReturn;
         }     
     }

@@ -1,14 +1,12 @@
-﻿using AthensLibrary.Data.Interface;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Helpers.HelperClasses;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AthensLibrary.Service.Implementations
 {

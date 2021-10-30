@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
-using AthensLibrary.Model.Enumerators;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 namespace AthensLibrary.Model.Helpers.HelperClasses
 {
     public class CustomUserManager
-    {        
+    { 
+        
         protected readonly UserManager<User> _userManager;
         protected readonly IMapper _mapper;
         protected readonly IUnitOfWork _unitOfWork;

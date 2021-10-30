@@ -57,9 +57,12 @@ namespace AthensLibrary.Controllers
             if (email.Length == 0)
                 return NotFound("Email from last session not found");
 
-            var (success, message) = await _userService.UpdateUser(Encoding.UTF8.GetString(email), model);
+            var result = await _userService.UpdateUser(Encoding.UTF8.GetString(email), model);
 
-            return success ? Ok(message) : BadRequest(message);
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
         [HttpPatch("id/{Id}"), Authorize(Policy = "AdminRolePolicy")]
@@ -68,8 +71,11 @@ namespace AthensLibrary.Controllers
             if (model is null) return BadRequest("model for update is null");
             if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
 
-            var (success, message) = await _userService.UpdateUser(Id, model);
-            return success ? Ok(message) : BadRequest(message);
+            var result = await _userService.UpdateUser(Id, model);
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
     }

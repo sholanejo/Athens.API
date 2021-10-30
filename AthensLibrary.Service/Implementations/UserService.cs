@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AthensLibrary.Data.Interface;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Model.Entities;
 using AthensLibrary.Model.Enumerators;
 using AthensLibrary.Model.Helpers.HelperClasses;
-using AthensLibrary.Model.RequestFeatures;
 using AthensLibrary.Service.Interface;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -34,9 +30,8 @@ namespace AthensLibrary.Service.Implementations
                 UserId = Id
             };
             var repo = _unitOfWork.GetRepository<Author>();
-            repo.Add(author);
-            var affectedRows = await _unitOfWork.SaveChangesAsync();
-            if (affectedRows < 1)
+            var result = await repo.AddAsync(author);            
+            if (result is null)
             {
                 await deleteUser(model.Email);
                return new ReturnModel { Success = false, Message = "Internal Db error, registration failed" };               

@@ -28,11 +28,11 @@ namespace AthensLibrary.Controllers
 
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPost(Name = "CreateCategory")]
-        public IActionResult CreateCategory([FromBody] CategoryCreationDTO category)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryCreationDTO category)
         {
             //Check category does not alreadt exist!!!!
            // if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            var result = _categoryService.AddCategory(category);
+            var result = await _categoryService.AddCategory(category);
 
             if (result.Success)
                 return Ok(result.Message);
