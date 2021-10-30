@@ -6,13 +6,14 @@ using AthensLibrary.Model.Entities;
 using System.Threading.Tasks;
 using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
+using AthensLibrary.Model.Helpers.HelperClasses;
 
 namespace AthensLibrary.Service.Interface
 {
     public interface ILibraryUserService
     {        
-        Task<(bool success, string msg)> Register(UserRegisterDTO model);
-        Task<(bool, string)> Delete(Guid id);
+        Task<ReturnModel> Register(UserRegisterDTO model);
+        ReturnModel Delete(Guid id);
         LibraryUserDTO GetLibraryUserById(Guid id);
         LibraryUserDTO GetLibraryUserByName(string name);
         IEnumerable<LibraryUser> GetAllLibraryUsers();

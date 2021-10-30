@@ -1,5 +1,6 @@
 ﻿using AthensLibrary.Model.DataTransferObjects;
 using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperClasses;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,6 +13,6 @@ namespace AthensLibrary.Service.Interface
         Author GetAuthorByName(string name);
         IEnumerable<Author> GetAllAuthors();
         Author GetAuthorByEmail(string email);
-        Task<(bool, string)> Delete(Guid id);
+        ReturnModel Delete(Guid id);
     }
 }

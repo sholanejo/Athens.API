@@ -29,37 +29,28 @@ namespace AthensLibrary.Service.Implementations
             _mapper = mapper;
         }        
 
-        public IEnumerable<Author> GetAllAuthors()
-        {
-            return _authorRepository.GetAll().ToList();
-        }
+        public IEnumerable<Author> GetAllAuthors() =>
+             _authorRepository.GetAll().ToList();
+        
 
-        public Author GetAuthorByEmail(string email)
-        {
-            var author = _authorRepository.GetSingleByCondition(a => a.User.Email == email);
-            return author;
-        }        
-
-        public Author  GetAuthorByName(string name)
+        public Author GetAuthorByEmail(string email) =>
+             _authorRepository.GetSingleByCondition(a => a.User.Email == email);
+ 
+        public Author GetAuthorByName(string name)
         {
             var user = _userRepository.GetSingleByCondition(a => a.FullName == name);
-            var author = _authorRepository.GetSingleByCondition(a => a.UserId == user.Id);
-            return author;
+
+            return _authorRepository.GetSingleByCondition(a => a.UserId == user.Id);            
         }
 
         public AuthorDTO GetAuthorById(Guid id)
         {
             var author = _authorRepository.GetById(id);
-            var authorM = _mapper.Map<AuthorDTO>(author);
-            return authorM;
+
+            return _mapper.Map<AuthorDTO>(author);         
         } 
 
-        public async Task<(bool, string)> Delete(Guid id)
-        {
-            //Check if an entity is already deleted!
-            var (EntityToDelete, message) = _authorRepository.SoftDelete(id);
-            if (EntityToDelete is null) return (false, message);
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Delete successful");
-        }
+        public ReturnModel Delete(Guid id) =>
+            _authorRepository.SoftDelete(id);          
     }
 }

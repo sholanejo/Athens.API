@@ -24,10 +24,10 @@ namespace AthensLibrary.Service.Implementations
             _serviceFactory = serviceFactory;
         }       
 
-        public async Task<(bool, string)> EnrollAuthor(UserRegisterDTO model)
+        public async Task<ReturnModel> EnrollAuthor(UserRegisterDTO model)
         {
             var (success, message, Id) = await CreateUserAsync(model, Roles.Author.ToString());
-            if (!success) return (false, "User not created");
+            if (!success) return new ReturnModel { Success = false, Message = "User not created" };
             var author = new Author
             {               
                 IsDeleted = false,               
@@ -39,20 +39,20 @@ namespace AthensLibrary.Service.Implementations
             if (affectedRows < 1)
             {
                 await deleteUser(model.Email);
-                return (false, "Internal Db error, registration failed");
+               return new ReturnModel { Success = false, Message = "Internal Db error, registration failed" };               
             }
-            return (true, "Author added successfully");
+            return new ReturnModel { Success = true, Message = "Author added successfully" };
         }
         
-        public async Task<(bool, string)> UpdateUser(string identifier, JsonPatchDocument<UserUpdateDTO> model)
+        public async Task<ReturnModel> UpdateUser(string identifier, JsonPatchDocument<UserUpdateDTO> model)
         {
             var userEntity = await _userManager.FindByEmailAsync(identifier);
             userEntity ??= await _userManager.FindByIdAsync(identifier);
-            if (userEntity is null) return (false, "user not found");
+            if (userEntity is null) return new ReturnModel { Success = false, Message = "user not found" };
             var userToPatch = _mapper.Map<UserUpdateDTO>(userEntity);
             model.ApplyTo(userToPatch);
             _mapper.Map(userToPatch, userEntity);
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "update successfully");
+            return new ReturnModel { Success = true, Message = "update successfully" };
         }      
     }
 }

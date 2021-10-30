@@ -26,27 +26,23 @@ namespace AthensLibrary.Service.Implementations
             _userRepo = _unitOfWork.GetRepository<User>();
         }
 
-        public async Task<(bool, string)> Delete(Guid id)
-        {            
-           var (EntityToDelete, message) = _libraryUserRepo.SoftDelete(id);
-            if (EntityToDelete is null) return (false, message);           
-            return (await _unitOfWork.SaveChangesAsync()) < 1 ? (false, "Internal Db error, Update failed") : (true, "Delete successful");
-        }
+        public ReturnModel Delete(Guid id) =>
+            _libraryUserRepo.SoftDelete(id);
 
-        public async Task<(bool success, string msg)> Register(UserRegisterDTO model)
+        public async Task<ReturnModel> Register(UserRegisterDTO model)
         {
             //should a person get a token immediately after registering or they will need to login!! 
             var (success, message, Id) = await CreateUserAsync(model, Roles.LibraryUser.ToString());
-            if (!success) return (false, "User not created");
+            if (!success) return new ReturnModel (false, "User not created");
             var libraryUser = new LibraryUser { UserId = Id };           
             _libraryUserRepo.Add(libraryUser);
             var affectedRows = await _unitOfWork.SaveChangesAsync();
             if (affectedRows < 1)
             {
                 await deleteUser(model.Email);
-                return (false, "Internal Db error, registration failed");
+                return new ReturnModel(false, "Internal Db error, registration failed");
             }
-            return (true, "Registration successfully");
+            return new ReturnModel(true, "Registration successfully");
         }
 
         public IEnumerable<LibraryUser> GetAllLibraryUsers()
