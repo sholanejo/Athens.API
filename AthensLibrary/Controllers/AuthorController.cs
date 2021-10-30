@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AthensLibrary.Filters.ActionFilters;
 using AthensLibrary.Model.DataTransferObjects.LibraryUserControllerDTO;
 using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AthensLibrary.Controllers
 {
+    [Authorize(Policy = "AdminRolePolicy")]
     [Route("api/author")]
     [ApiController]
     public class AuthorController : ControllerBase
@@ -18,45 +20,52 @@ namespace AthensLibrary.Controllers
         {
             _authorService = authorService;
             _serviceFactory = serviceFactory;
-        }        
+        }
 
-       [HttpPost(Name ="AddAuthor"), Authorize(Policy = "AdminRolePolicy")]        
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [HttpPost(Name = "AddAuthor")]
         //How can this method be generic to both libraryusers and authors
         public async Task<IActionResult> AddAuthor(UserRegisterDTO model)
         {
             var _userService = _serviceFactory.GetServices<IUserService>();
-            var (success, message) = await _userService.EnrollAuthor(model);
-            return success ? Ok(message) : BadRequest(message);
+
+            var result = await _userService.EnrollAuthor(model);
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
 
-        [HttpGet(Name ="GetAuthors")]
-        public IActionResult GetAllAuthors()
-        {
-            var author = _authorService.GetAllAuthors();
-            return Ok(author);
-        }
-
-
-        [HttpGet("Id/{id}"), Authorize(Policy = "AdminRolePolicy")]         
+        [HttpGet("id/{id}")]
         public IActionResult GetAuthorById(Guid Id)
         {
             return Ok(_authorService.GetAuthorById(Id));
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("id/{id}")]
+        public IActionResult Delete(Guid id)
         {
-            var (success, message)= await _authorService.Delete(id);
-            return success ? Ok(message) : BadRequest(message);
+            var result = _authorService.Delete(id);
 
+            return (result.Success) ? Ok(result.Message) : BadRequest(result.Message);
         }
 
+        [AllowAnonymous]
         [HttpGet("name/{name}")]
         public IActionResult GetAuthorByName(string name)
-        {           
-            return Ok( _authorService.GetAuthorByName(name));
+        {
+            return Ok(_authorService.GetAuthorByName(name));
+        }
+
+        [AllowAnonymous]
+        [HttpGet(Name = "GetAuthors")]
+        public IActionResult GetAllAuthors()
+        {
+            var author = _authorService.GetAllAuthors();
+            return Ok(author);
         }
     }
 }

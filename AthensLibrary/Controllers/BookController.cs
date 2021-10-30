@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using AthensLibrary.Filters.ActionFilters;
 using AthensLibrary.Filters.AuthorizationFilters;
 using AthensLibrary.Model.DataTransferObjects.BookControllerDTO;
 using AthensLibrary.Model.RequestFeatures;
@@ -32,19 +33,31 @@ namespace AthensLibrary.Controllers
         public async Task<IActionResult> CheckOutABook(Guid bookId)
         {
             HttpContext.Session.TryGetValue("Email", out byte[] email);
-            if (email is null) return NotFound("Cant find a logged in user!");
-            var model = new CheckOutABookDTO { Email = Encoding.ASCII.GetString(email) };            
-            var (success, message) = await _bookService.CheckOutABook(bookId, model);
-            return success ? Ok(message) : BadRequest(message);
+
+            if (email is null) 
+                return NotFound("Cant find a logged in user!");
+
+            var model = new CheckOutABookDTO { Email = Encoding.ASCII.GetString(email) };  
+            
+            var result  = await _bookService.CheckOutABook(bookId, model);
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
         //PUT
-        [HttpPut("{borrowDetailId}/ReturnABook"), Authorize]
-        public async Task<IActionResult> ReturnABook(Guid borrowDetailId)
+        [HttpPut("{borrowDetailId}/returnABook"), Authorize]
+        public IActionResult ReturnABook(Guid borrowDetailId)
         //what if i want to return a list of books
         {
-            var (success, message) = await _bookService.ReturnABook(borrowDetailId);
-            return success ? Ok(message) : BadRequest(message);
+            var result = _bookService.ReturnABook(borrowDetailId);
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
         //GET
@@ -52,96 +65,143 @@ namespace AthensLibrary.Controllers
         public IActionResult GetAllBooks([FromQuery] BookParameters bookParameters)
         {
             var result = _bookService.GetAllBooks(bookParameters);
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+
             return Ok(result);
         }
 
-        [HttpGet("BooksByAuthor/{authorId}")]
+        [HttpGet("booksByAuthor/{authorId}", Name ="GetBooksByAuthor")]
         public IActionResult GetAllBooksByAnAuthor(string authorId, [FromQuery] BookParameters bookParameters)
         {
             var result = _bookService.GetAllBooksByAnAuthor(authorId, bookParameters);
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+
             return Ok(result);
         }
 
-        [HttpGet("BooksByLoggedInAuthor"), Authorize(Policy = "AuthorRolePolicy")]
+        [HttpGet("booksByLoggedInAuthor", Name = "GetBooksByLoggedInAuthor"), Authorize(Policy = "AuthorRolePolicy")]
         public IActionResult GetAllBooksByLoggedInAuthor([FromQuery] BookParameters bookParameters)
         {
             HttpContext.Session.TryGetValue("Email", out byte[] email);
+
             var result =_bookService.GetAllBooksByAnAuthor(Encoding.ASCII.GetString(email), bookParameters);
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+
             return Ok(result);            
         }
 
-        [HttpDelete("id/{id}")]
+        [HttpDelete("id/{id}", Name = "GetBookById")]
         public IActionResult Delete(Guid id)
         {
-
             _bookService.Delete(id);
-            return Ok();
+            return Ok("Delete SUccessful");
         }
 
-        [HttpGet("BooksByCategory/{categoryName}")]
+
+        [HttpGet("booksByCategory/{categoryName}", Name = "GetBooksByCategory")]
         public IActionResult GetAllBooksByACategory(string categoryName, [FromQuery] BookParameters bookParameters)
         {
             var result = _bookService.GetAllBooksInACategory(categoryName, bookParameters);
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+
             return Ok(result);
         }
 
-        [HttpGet("BooksByYear/{year}")]
+
+        [HttpGet("booksByYear/{year}", Name = "GetBooksByYearPublished")]
         public IActionResult GetAllBooksByYearPublished(int year, [FromQuery] BookParameters bookParameters)
         {
             var result = _bookService.GetAllBooksPublishedInAYear(year, bookParameters);
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+
             return Ok(result);
         }
 
-        [HttpGet("BooksByTitle/{bookTitle}")]
+        [HttpGet("booksByTitle/{bookTitle}", Name = "GetBooksByTitle")]
         public IActionResult GetAllBooksByTitle(string bookTitle, [FromQuery] BookParameters bookParameters)
         {
             var result = _bookService.GetBooksByTitle(bookTitle, bookParameters);
+
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));
+
             return Ok(result);
         }
 
+
         [HttpGet("{Id}")]
         public IActionResult GetBookByIsbn(Guid Id) => Ok(_bookService.GetABookByIsbn(Id));
-        
+
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [HttpPost(Name = "CreateBook"), MultiplePolicysAuthorize("AdminRolePolicy;AuthorRolePolicy")]
         //What if i want to Create a book, and i am logged in as an author will i still need to provide my AuthorId
         public async Task<IActionResult> CreateBook(BookCreationDTO model)
         {
             //Add createdby, so we can tell authors ceation from Admin's
-            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
+            if (!ModelState.IsValid) 
+                return BadRequest("Object sent from client is null.");
+
             var bookService = _serviceFactory.GetServices<IBookService>();
-            var (success, message) = await bookService.CreateBook(model);
-            return success ? Ok(message) : BadRequest(message);
+
+            var result = await bookService.CreateBook(model);
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
-        [HttpPost("BookRequest"), MultiplePolicysAuthorize("LibraryUserRolePolicy;AuthorRolePolicy")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [HttpPost("bookRequest"), MultiplePolicysAuthorize("LibraryUserRolePolicy;AuthorRolePolicy")]
         public async Task<IActionResult> RequestABook(UserBookRequestDTO model)
         {
-            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
+            if (!ModelState.IsValid) 
+                return BadRequest("Object sent from client is null.");
+
             var booklibService = _serviceFactory.GetServices<IBookService>();
-            var (success, message) = await booklibService.RequestABook(model);
-            return success ? Ok(message) : BadRequest(message);
-        }
-        [HttpPost("BookDeleteRequest"), Authorize(Policy = "AuthorRolePolicy")]
-        public async Task<IActionResult> RequestABookDelete(UserBookDeleteRequestDTO model)
-        {
-            if (!ModelState.IsValid) return BadRequest("Object sent from client is null.");
-            HttpContext.Session.TryGetValue("Email", out byte[] email);
-            if (email.Length == 0) return NotFound("Email from last session not found");
-            var (success, message) = await _bookService.RequestABookDelete(model, Encoding.ASCII.GetString(email));
-            return success ? Ok(message) : BadRequest(message);
+
+            var result = await booklibService.RequestABook(model);
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
 
-        [HttpPatch("id/{Id}")]
-        public async Task<IActionResult> UpdateBook(Guid Id, [FromBody] JsonPatchDocument<BookUpdateDTO> model)
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [HttpPost("bookDeleteRequest"), Authorize(Policy = "AuthorRolePolicy")]
+        public async Task<IActionResult> RequestABookDelete(UserBookDeleteRequestDTO model)
         {
-            var (success, message) = await _bookService.UpdateBook(Id, model);
-            return success ? Ok(message) : BadRequest(message);
+            if (!ModelState.IsValid) 
+                return BadRequest("Object sent from client is null.");
+
+            HttpContext.Session.TryGetValue("Email", out byte[] email);
+
+            if (email.Length == 0) 
+                return NotFound("Email from last session not found");
+
+            var result = await _bookService.RequestABookDelete(model, Encoding.ASCII.GetString(email));
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
+        }
+
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [HttpPatch("id/{Id}"), Authorize(Policy = "AdminRolePolicy")]
+        public IActionResult UpdateBook(Guid Id, [FromBody] JsonPatchDocument<BookUpdateDTO> model)
+        {
+            var result =  _bookService.UpdateBook(Id, model);
+
+            if (result.Success)
+                return Ok(result.Message);
+
+            return BadRequest(result.Message);
         }
     }
 }
