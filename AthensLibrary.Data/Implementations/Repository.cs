@@ -1,12 +1,12 @@
-﻿using AthensLibrary.Data.Interface;
-using AthensLibrary.Model.Entities;
-using AthensLibrary.Model.Helpers.HelperInterfaces;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AthensLibrary.Data.Interface;
+using AthensLibrary.Model.Helpers.HelperClasses;
+using AthensLibrary.Model.Helpers.HelperInterfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace AthensLibrary.Data.Implementations
 {
@@ -17,7 +17,7 @@ namespace AthensLibrary.Data.Implementations
         private readonly DbSet<T> _dbSet;
 
         // predicate to help us filter and select entities where is their IsDeleted property is false
-        private Expression<Func<T, bool>> softDeletePredicate = e=>e.IsDeleted == false;
+        private Expression<Func<T, bool>> softDeletePredicate = e => e.IsDeleted == false;
 
 
         public Repository(DbContext context)
@@ -44,7 +44,7 @@ namespace AthensLibrary.Data.Implementations
 
         public IQueryable<T> GetAllWithInclude(string incPpt)
         {
-            return _dbContext.Set<T>().Where(softDeletePredicate).Include(incPpt);           
+            return _dbContext.Set<T>().Where(softDeletePredicate).Include(incPpt);
         }
 
         public async Task<T> AddAsync(T obj)
@@ -74,10 +74,10 @@ namespace AthensLibrary.Data.Implementations
 
         public T GetById(object id)
         {
-           
+
             var entity = _dbSet.Find(id);
             // TODO : should we return null when object is deleted 
-           // if (entity.IsDeleted == true) return null;    
+            // if (entity.IsDeleted == true) return null;    
             return entity;
         }
 
@@ -92,7 +92,7 @@ namespace AthensLibrary.Data.Implementations
         public T GetSingleByCondition(Expression<Func<T, bool>> predicate = null, Func<IQueryable, IOrderedQueryable> orderby = null, params string[] includeProperties)
         {
             if (predicate is null) return _dbSet.Where(softDeletePredicate).ToList().FirstOrDefault();
-            return  _dbSet.Where(softDeletePredicate).Where(predicate).FirstOrDefault();
+            return _dbSet.Where(softDeletePredicate).Where(predicate).FirstOrDefault();
         }
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate = null)
@@ -107,15 +107,23 @@ namespace AthensLibrary.Data.Implementations
             return _dbSet.Where(softDeletePredicate).Any(predicate);
         }
 
-        public (T, string) SoftDelete(Guid Id)
+        public ReturnModel SoftDelete(Guid Id)
         {
             var entity = _dbSet.Find(Id);
-            if (entity is null ) return (null, "Entity Not found"); 
-            if (entity.IsDeleted) return (null, "Already deleted"); 
+            if (entity is null) return new ReturnModel { Success = false, Message = "Entity Not Found" };
+            if (entity.IsDeleted) return new ReturnModel { Success = false, Message = "Entity Already deleted" };
             entity.IsDeleted = true;
             _dbContext.Entry(entity).State = EntityState.Modified;
-            return (entity, "Successful"); 
+            return new ReturnModel { Success = true, Message = "Delete Successful" };
         }
 
+        public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> obj)
+        {
+
+            _dbContext.AddRange(obj);
+            await _dbContext.SaveChangesAsync();
+            return obj;
+
+        }
     }
 }

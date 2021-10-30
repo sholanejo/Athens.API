@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AthensLibrary.Model.Helpers.HelperClasses;
 
 namespace AthensLibrary.Data.Interface
 {
@@ -10,7 +11,8 @@ namespace AthensLibrary.Data.Interface
     {
       
         T Add(T obj);
-        public IEnumerable<T> AddRange(IEnumerable<T> obj);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> obj);
+        IEnumerable<T> AddRange(IEnumerable<T> obj);
         void Insert(T entity);
         Task<T> AddAsync(T obj);
         IEnumerable<T> GetAll();
@@ -22,6 +24,6 @@ namespace AthensLibrary.Data.Interface
 
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate = null);
         bool Any(Expression<Func<T, bool>> predicate = null);
-        (T, string) SoftDelete(Guid Id);
+        ReturnModel SoftDelete(Guid Id);
     }
 }
