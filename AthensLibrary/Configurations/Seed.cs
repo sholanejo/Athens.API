@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace AthensLibrary.Configurations
 {
-    public static class SeedAuthor
+    public static class Seed
     {
-        public static async Task SeedAuthorAsync(UserManager<User> authorManager, RoleManager<Role> roleManager, AthensDbContext context)
+        public static async Task SeedAuthorAsync(UserManager<User> authorManager, RoleManager<Role> roleManager, DbContext context)
         {
             var author1 = new User
             {
@@ -88,9 +88,9 @@ namespace AthensLibrary.Configurations
                     {
                         context.Database.Migrate();
                     }
-                    if (!context.Authors.Any())
+                    if (!context.Set<Author>().Any())
                     {
-                        context.Authors.AddRange
+                        context.Set<Author>().AddRange
                             (
                             new Author { Id = new Guid("8bb6b0fa-6611-4af3-84e5-a847e76e1ac3"), UserId = author1.Id,  IsDeleted = false },
                             new Author { Id = new Guid("7d4bc279-823a-4fe3-b62d-62568528c2f2"), UserId = author2.Id,  IsDeleted = false },

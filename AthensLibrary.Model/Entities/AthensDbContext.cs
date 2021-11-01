@@ -9,6 +9,8 @@ namespace AthensLibrary.Model.Entities
         public AthensDbContext(DbContextOptions<AthensDbContext> options) : base(options)
         {
         }
+        
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
            builder.SeedBooks();
