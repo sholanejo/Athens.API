@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace AthensLibrary.Controllers
@@ -32,12 +33,14 @@ namespace AthensLibrary.Controllers
         [HttpPost("{bookId}/CheckOut"), Authorize]
         public async Task<IActionResult> CheckOutABook(Guid bookId)
         {
+            var configuration = _serviceFactory.GetServices<IConfiguration>();
+
             HttpContext.Session.TryGetValue("Email", out byte[] email);
 
             if (email is null) 
                 return NotFound("Cant find a logged in user!");
 
-            var model = new CheckOutABookDTO { Email = Encoding.ASCII.GetString(email) };  
+            var model = new CheckOutABookDTO(configuration) { Email = Encoding.ASCII.GetString(email) };  
             
             var result  = await _bookService.CheckOutABook(bookId, model);
 

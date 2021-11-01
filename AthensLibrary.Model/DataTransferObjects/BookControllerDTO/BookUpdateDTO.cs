@@ -11,6 +11,6 @@ namespace AthensLibrary.Model.DataTransferObjects.BookControllerDTO
         public int CurrentBookCount { get; set; }
         public Guid AuthorId { get; set; }
         public bool IsDeleted { get; set; }
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; }
     }
 }

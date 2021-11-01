@@ -18,8 +18,7 @@ using Microsoft.OpenApi.Models;
 namespace AthensLibrary
 {
     public class Startup
-    {
-       //public IServiceProvider serviceProvider { get; }
+    {      
 
         public Startup(IConfiguration configuration )
         {

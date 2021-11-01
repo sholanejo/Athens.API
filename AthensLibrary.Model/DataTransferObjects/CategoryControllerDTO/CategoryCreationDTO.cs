@@ -8,7 +8,7 @@ namespace AthensLibrary.Model.DataTransferObjects.CategoryControllerDTO
     {
         [Required(ErrorMessage="CategoryName is required")]
         public string CategoryName { get; set; }
-        public bool IsDeleted { get; set; } = false;    
+        public bool IsDeleted { get; set; }     
         
     }
 }
