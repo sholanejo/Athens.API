@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AthensLibrary.Model", "Athe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AthensLibrary.Service", "AthensLibrary.Service\AthensLibrary.Service.csproj", "{0AA0B5C7-72DF-423E-B432-7993CFFFD4EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{359D80BB-4041-4678-8E62-38BCD8170DDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Helpers\Helpers.csproj", "{359D80BB-4041-4678-8E62-38BCD8170DDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AthensLibrary.Test", "AthensLibrary.Test\AthensLibrary.Test.csproj", "{F04C77C3-5077-4CBD-9F26-1409E595FF9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F04C77C3-5077-4CBD-9F26-1409E595FF9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F04C77C3-5077-4CBD-9F26-1409E595FF9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F04C77C3-5077-4CBD-9F26-1409E595FF9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F04C77C3-5077-4CBD-9F26-1409E595FF9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

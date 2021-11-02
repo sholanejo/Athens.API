@@ -59,7 +59,7 @@ namespace AthensLibrary.Extensions
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = configuration["SecretKey"];
+            var secretKey = "ugftyuiyfdfg"; ///configuration["SecretKey"];
 
             services.AddAuthentication(opt => { opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme; opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; }).AddJwtBearer(options =>
             {

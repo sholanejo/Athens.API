@@ -38,14 +38,14 @@ namespace AthensLibrary.Controllers
         }
 
 
-        [HttpGet("id/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetAuthorById(Guid Id)
         {
             return Ok(_authorService.GetAuthorById(Id));
         }
 
 
-        [HttpDelete("id/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(Guid id)
         {
             var result = _authorService.Delete(id);
@@ -54,7 +54,7 @@ namespace AthensLibrary.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("name/{name}")]
+        [HttpGet("name")]
         public IActionResult GetAuthorByName(string name)
         {
             return Ok(_authorService.GetAuthorByName(name));

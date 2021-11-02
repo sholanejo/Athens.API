@@ -65,8 +65,9 @@ namespace AthensLibrary.Controllers
 
         //GET
         [HttpGet(Name = "GetBooks")]
-        public IActionResult GetAllBooks([FromQuery] BookParameters bookParameters)
+        public IActionResult GetAllBooks()
         {
+            BookParameters bookParameters = new BookParameters();
             var result = _bookService.GetAllBooks(bookParameters);
 
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(result.MetaData));

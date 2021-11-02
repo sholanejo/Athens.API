@@ -46,7 +46,8 @@ namespace AthensLibrary
             services.ConfigureSession();
             services.AddCustomMediaTypes();
         }
-        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceFactory serviceFactory)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, 
+            AthensDbContext dbContext, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -67,7 +68,7 @@ namespace AthensLibrary
                 endpoints.MapControllers();
             });
 
-            await new SeedRoleAdmin(serviceFactory).seedRolesAdmin();
+            await SeedRoleAdmin.seedRolesAdmin(dbContext, userManager, roleManager);
         }
     }
 }
