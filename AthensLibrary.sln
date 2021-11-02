@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AthensLibrary", "AthensLibrary\AthensLibrary.csproj", "{0FB9F506-A739-4E8D-8938-6FFC92769EC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AthensLibrary", "AthensLibrary\AthensLibrary.csproj", "{0FB9F506-A739-4E8D-8938-6FFC92769EC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AthensLibrary.Data", "AthensLibrary.Data\AthensLibrary.Data.csproj", "{CC860846-1341-4A94-BC6F-9DD96F004DD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AthensLibrary.Data", "AthensLibrary.Data\AthensLibrary.Data.csproj", "{CC860846-1341-4A94-BC6F-9DD96F004DD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AthensLibrary.Model", "AthensLibrary.Model\AthensLibrary.Model.csproj", "{511DD635-7762-4E0A-AD03-1763DCC62762}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AthensLibrary.Model", "AthensLibrary.Model\AthensLibrary.Model.csproj", "{511DD635-7762-4E0A-AD03-1763DCC62762}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AthensLibrary.Service", "AthensLibrary.Service\AthensLibrary.Service.csproj", "{0AA0B5C7-72DF-423E-B432-7993CFFFD4EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AthensLibrary.Service", "AthensLibrary.Service\AthensLibrary.Service.csproj", "{0AA0B5C7-72DF-423E-B432-7993CFFFD4EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpers", "Helpers\Helpers.csproj", "{359D80BB-4041-4678-8E62-38BCD8170DDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{0AA0B5C7-72DF-423E-B432-7993CFFFD4EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AA0B5C7-72DF-423E-B432-7993CFFFD4EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AA0B5C7-72DF-423E-B432-7993CFFFD4EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{359D80BB-4041-4678-8E62-38BCD8170DDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

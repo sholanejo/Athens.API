@@ -1,41 +1,52 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AthensLibrary.Configurations;
+using AthensLibrary.Extensions;
+using AthensLibrary.Model.Entities;
+using AthensLibrary.Model.Helpers.HelperClasses;
+using AthensLibrary.Service.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace AthensLibrary
 {
     public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+    {      
 
+        public Startup(IConfiguration configuration )
+        {
+            Configuration = configuration;            
+        }
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers(config =>
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddNewtonsoftJson()
+            .AddXmlDataContractSerializerFormatters();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AthensLibrary", Version = "v1" });
             });
-        }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+            services.RegisterServices(Configuration);
+            services.AddAutoMapper(typeof(MappingProfile));
+            services.ConfigureJWT(Configuration);
+            services.ConfigureSession();
+            services.AddCustomMediaTypes();
+        }
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceFactory serviceFactory)
         {
             if (env.IsDevelopment())
             {
@@ -43,17 +54,20 @@ namespace AthensLibrary
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AthensLibrary v1"));
             }
-
+            app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            await new SeedRoleAdmin(serviceFactory).seedRolesAdmin();
         }
     }
 }
